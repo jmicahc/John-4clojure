@@ -2889,12 +2889,12 @@
 
 (defn min-path [triangle]
   (letfn [(walk 
-           [g i j]
+           [f g i j]
            (if (= (inc i) (count g))
              ((g i) j)
-             (+ ((g i) j) (min (walk g (inc i) j)
-                               (walk g (inc i) (inc j))))))]
-    (walk (vec triangle) 0 0)))
+             (+ ((g i) j) (min (walk f g (inc i) j)
+                               (walk f g (inc i) (inc j))))))]
+    (walk (memoize walk) (vec triangle) 0 0)))
 
 (= 7 (min-path '([1]
                 [2 4]
