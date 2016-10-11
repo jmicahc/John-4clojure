@@ -204,7 +204,7 @@
 
 ;; Write a function which duplicates each element of a sequence.
 
-(defn dup [coll] (apply concat (map (fn [a b] (list a b)) coll coll)))
+(defn dup [coll] (mapcat list coll coll))
 
 
 (= (dup [1 2 3]) '(1 1 2 2 3 3))
