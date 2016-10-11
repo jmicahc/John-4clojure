@@ -2892,8 +2892,8 @@
            [f g i j]
            (if (= (inc i) (count g))
              ((g i) j)
-             (+ ((g i) j) (min (walk f g (inc i) j)
-                               (walk f g (inc i) (inc j))))))]
+             (+ ((g i) j) (min (f f g (inc i) j)
+                               (f f g (inc i) (inc j))))))]
     (walk (memoize walk) (vec triangle) 0 0)))
 
 (= 7 (min-path '([1]
