@@ -756,15 +756,15 @@
 ;; function that accepts a variable length mathematical expression consisting of numbers and the operations +, -, *, 
 ;; and /. Assume a simple calculator that does not do precedence and instead just calculates left to right.
 
-(defn f 
+(defn calc 
   ([x] x)
   ([x o y & expr]
-   (apply f (o x y) expr)))
+   (apply calc (o x y) expr)))
 
-(= 7  (f 2 + 5))
-(= 42 (f 38 + 48 - 2 / 2))
-(= 8  (f 10 / 2 - 1 * 2))
-(= 72 (f 20 / 2 + 2 + 4 + 8 - 6 - 10 * 9))
+(= 7  (calc 2 + 5))
+(= 42 (calc 38 + 48 - 2 / 2))
+(= 8  (calc 10 / 2 - 1 * 2))
+(= 72 (calc 20 / 2 + 2 + 4 + 8 - 6 - 10 * 9))
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
