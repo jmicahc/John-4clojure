@@ -174,11 +174,8 @@
 
 (defn max* [& coll]
   (reduce (fn [res x]
-            (if (> x res)
-              x
-              res))
-          (first coll)
-          (next coll)))
+            (if (> x res) x res))
+          coll))
 
 
 (= (max* 1 8 3 4) 8)
@@ -1386,6 +1383,13 @@
 ;; <=
 
 ;; @@
+(partition 2 1 [] [1 2 3 4])
+;; @@
+;; =>
+;;; {"type":"list-like","open":"<span class='clj-lazy-seq'>(</span>","close":"<span class='clj-lazy-seq'>)</span>","separator":" ","items":[{"type":"list-like","open":"<span class='clj-lazy-seq'>(</span>","close":"<span class='clj-lazy-seq'>)</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-long'>1</span>","value":"1"},{"type":"html","content":"<span class='clj-long'>2</span>","value":"2"}],"value":"(1 2)"},{"type":"list-like","open":"<span class='clj-lazy-seq'>(</span>","close":"<span class='clj-lazy-seq'>)</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-long'>2</span>","value":"2"},{"type":"html","content":"<span class='clj-long'>3</span>","value":"3"}],"value":"(2 3)"},{"type":"list-like","open":"<span class='clj-lazy-seq'>(</span>","close":"<span class='clj-lazy-seq'>)</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-long'>3</span>","value":"3"},{"type":"html","content":"<span class='clj-long'>4</span>","value":"4"}],"value":"(3 4)"},{"type":"list-like","open":"<span class='clj-lazy-seq'>(</span>","close":"<span class='clj-lazy-seq'>)</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-long'>4</span>","value":"4"}],"value":"(4)"}],"value":"((1 2) (2 3) (3 4) (4))"}
+;; <=
+
+;; @@
 ;; Insert between two items
 ;; Difficulty:	Medium
 ;; Topics:	seqs core-functions
@@ -1394,12 +1398,13 @@
 ;; Write a function that takes a two-argument predicate, a value, and a collection; and returns a new collection where the 
 ;; value is inserted between every two items that satisfy the predicate.
 
+
 (defn insert-between [pred x coll]
-  (mapcat (fn [[a b :as xs]]
-            (cond (= b :end) [a]
+  (mapcat (fn [[a b]]
+            (cond (nil? b) [a]
                   (pred a b) [a x]
                   :else [a]))
-          (partition 2 1 (concat coll (list :end)))))
+          (partition 2 1 [] coll)))
 
 (= '(1 :less 6 :less 7 4 3) (insert-between < :less [1 6 7 4 3]))
 
@@ -1439,7 +1444,7 @@
   (lazy-seq 
     (let [[a b] (split-with (comp not pred) coll)
           n (dec n)]
-      (concat a (if (== n 0) nil          
+      (concat a (when (> n 0)          
                   (cons (first b) 
                         (global-take-while n pred (rest b))))))))
 
@@ -1673,7 +1678,7 @@
            (apply concat 
                   (repeat fs)))))
 
-;; Better solution (from mike fikes) is:
+;; Better solution (from mike fikes):
 (defn oscilrate [init & fs]
   (reductions (fn [a f] (f a)) init (cycle fs)))
 
@@ -1798,7 +1803,7 @@
 ;; A balanced prime is a prime number which is also the mean of the primes directly before and after it in the sequence 
 ;; of valid primes. Create a function which takes an integer n, and returns true iff it is a balanced prime.
 
-;; My horrible solution.
+;; A horrible solution.
 (defn prime-sandwich? [n]
   (letfn [(binary-search [n x]
             "adapted from:
@@ -2383,11 +2388,10 @@
             (map #(concat % r) (rotations (vec l)))))
           (permutations
            [coll]
-           (reduce 
-            (fn [res idx] 
-              (mapcat rotate-and-join res (repeat idx)))
-            [coll]
-            (range (count coll) 1 -1)))]
+           (reduce (fn [res idx] 
+                     (mapcat rotate-and-join res (repeat idx)))
+                   [coll]
+                   (range (count coll) 1 -1)))]
      (loop [words (set words)
             result #{}]
        (let [word  (first words)
@@ -2486,7 +2490,7 @@
         palindromes (iterate nextp i) ] 
     (filter (partial <= n ) (map mirror palindromes))))
 
-;; finishes on my machine in 300ms... idk 
+
 (defn pals [n]
   (letfn [(n->start [n]
             (loop [ret n mlt 10]
@@ -2933,9 +2937,9 @@
 
 (defn transitive-closure [rel]
   (let [nxt (into #{}
-              (for [[x y1 :as r] rel
-                    [y2 z] rel]
-                (if (= y1 y2) [x z] r)))]
+                  (for [[x y1 :as r] rel
+                        [y2 z] rel]
+                    (if (= y1 y2) [x z] r)))]
     (if (= nxt rel) rel
       (recur nxt))))
 
@@ -2974,6 +2978,7 @@
 
 ;; Write a function which takes a sequence of words, and returns true if they can be arranged into one continous word 
 ;; chain, and false if they cannot.
+
 
 (defn word-chain? [words]
   (letfn [(adjacent?
@@ -3020,8 +3025,7 @@
       (boolean (some (partial connected? mat) words)))))
 
 
-(= true (word-chain? 
-          #{"hat" "coat" "dog" "cat" "oat" "cot" "hot" "hog"}))
+(= true (word-chain? #{"hat" "coat" "dog" "cat" "oat" "cot" "hot" "hog"}))
 
 (= false (word-chain? #{"cot" "hot" "bat" "fat"}))
 
@@ -3470,10 +3474,10 @@
                     (vec (repeat side-length \#)))))
           
           (locate-cell [maze value]
-            (first (filter #(= (get-in maze %) value)
-                          (for [i (range (count maze))
-                                j (range (count (maze i)))]
-                            [i j]))))
+            (first (for [i (range (count maze))
+                         j (range (count (maze i)))
+                         :when (= ((maze i) j) value)]
+                     [i j])))
           
           
           (distance
@@ -3486,10 +3490,10 @@
             [[x y] goal-point]
             (into (sorted-map)
                   (group-by (partial distance goal-point) 
-                  [[(inc x) y]
-                   [x (inc y)]
-                   [x (dec y)]
-                   [(dec x) y]])))
+                            [[(inc x) y]
+                             [x (inc y)]
+                             [x (dec y)]
+                             [(dec x) y]])))
           
           (legal-action? [maze point]
             (not= (get-in maze point) \#))
@@ -3509,14 +3513,13 @@
                    goal-pos (locate-cell maze \C)]
                (walk maze my-pos goal-pos #{})))
             ([maze my-pos goal-pos visited]
-               (if (= my-pos goal-pos) :muhahaha
+               (if (= my-pos goal-pos) :found
                  (let [action-seq (rank-actions maze my-pos goal-pos)
                        visited (conj visited my-pos)
                        next-steps (remove visited action-seq)]
                    (if (empty? next-steps) visited
-                     ;; No fold-right????
                      (loop [visited visited next-steps next-steps]
-                       (cond (= visited :muhahaha) visited
+                       (cond (= visited :found) visited
                              (empty? next-steps) visited
                              :else
                              (recur (walk maze
@@ -3525,7 +3528,7 @@
                                           visited)
                                     (next next-steps)))))))))]
     
-    (= (walk (build-maze maze-data)) :muhahaha)))
+    (= (walk (build-maze maze-data)) :found)))
 
 (= true  (for-science! ["M   C"]))
 
@@ -3895,7 +3898,6 @@
 ;; Board coordinates should be as in calls to get-in. For example, [0 1] is the topmost row, second column from the left.
 
 
-;; Not the prettiest....
 (defn analyze-reversi [board player]
   (letfn [(diagonals
             [board]
@@ -4259,12 +4261,12 @@
             (letfn [(step [paths]
                           (lazy-seq 
                             (when-not (empty? paths)
-                              (let [accepted (filter (comp accepts peek) paths)
-                                    accepted-strings (map (comp #(apply str %) pop) accepted)]
-                                (concat accepted-strings
+                              (let [strings-xf (comp (filter (comp accepts peek)) 
+                                                     (map (comp #(apply str %) pop)))]
+                                (concat (sequence strings-xf paths)
                                         (step (for [path paths
-                                                    [letter nxt] (transitions (peek path))]
-                                                (conj (pop path) letter nxt))))))))]
+                                                    [letter state] (transitions (peek path))]
+                                                (conj (pop path) letter state))))))))]
               (step [[start]])))]
     (gen-strings machine)))
 
