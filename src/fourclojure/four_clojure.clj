@@ -254,7 +254,7 @@
 
 (defn range* [start end]
   (lazy-seq 
-    (if (>= start end) nil
+    (if (>= start end) ni
       (cons start (range* (inc start) end)))))
 
 ;; Write a function which creates a list of all integers in a given range.
@@ -319,9 +319,7 @@
 ;;Write a function which takes two sequences and returns the first item from each, then the second item from each, then the third, etc.
 
 (defn interleave* [coll1 coll2] 
-  (apply concat 
-         (map (fn [a b] (list a b))                       
-              coll1 coll2)))
+  (apply concat (map list coll1 coll2)))
 
 (= (interleave* [1 2 3] [:a :b :c]) '(1 :a 2 :b 3 :c))
 (= (interleave* [1 2] [3 4 5 6]) '(1 3 2 4))
@@ -361,7 +359,7 @@
 ;; Write a function which replicates each element of a sequence a variable number of times.
 
 (defn rep [coll n] 
-  (apply concat (map (fn [x] (repeat n x)) coll)))
+  (mapcat (partial repeat n) coll))
 
 (= (rep [1 2 3] 2) '(1 1 2 2 3 3))
 (= (rep [:a :b] 4) '(:a :a :a :a :b :b :b :b))
@@ -511,7 +509,7 @@
 ;; Write a function which takes a vector of keys and a vector of values and constructs a map from them.
 
 (defn to-map [ks vs]
-  (into {} (map (fn [a b] [a b]) ks vs)))
+  (into {} (map vector ks vs)))
 
 (= (to-map [:a :b :c] [1 2 3]) {:a 1, :b 2, :c 3})
 (= (to-map [1 2 3 4] ["one" "two" "three"]) {1 "one", 2 "two", 3 "three"})
@@ -554,7 +552,7 @@
 ;; Write a function which returns the intersection of two sets. The intersection is the sub-set of items that each set has in common.
 
 (defn intersection [set1 set2]
-  (into #{} (filter #(set1 %) set2)))
+  (set (filter set1 set2)))
 
 (= (intersection #{0 1 2 3} #{2 3 4 5}) #{2 3})
 (= (intersection #{0 1 2} #{3 4 5}) #{})
@@ -606,8 +604,7 @@
 ;; Given a side-effect free function f and an initial value x write a function which returns an infinite lazy sequence of x, (f x), (f (f x)), (f (f (f x))), etc.
 
 (defn iter [f x]
-  (lazy-seq 
-   (cons x (iter f (f x)))))
+  (lazy-seq (cons x (iter f (f x)))))
 
 (= (take 5 (iter #(* 2 %) 1)) [1 2 4 8 16])
 (= (take 100 (iter inc 0)) (take 100 (range)))
@@ -728,16 +725,8 @@
 
 ;;Convert a binary number, provided in the form of a string, to its numerical value.
 
-;; TODO: make non-shitty.
-(defn read-binary [s]
-  (loop [ret 0 s s]
-    (cond
-      (empty? s) ret
-      (= (first s) \1)
-      (recur (+ ret (reduce * (repeat (dec (count s)) 2)))
-             (next s))
-      :else
-      (recur ret (next s)))))
+;; Hacks
+(defn read-binary [s] (read-string (str "2r" s)))
 
 
 (= 0     (read-binary "0"))
@@ -904,13 +893,544 @@
 ;; <=
 
 ;; @@
+;; Balancing Brackets
+;; Difficulty:	Medium
+;; Topics:	parsing
+
+
+;; When parsing a snippet of code it's often a good idea to do a sanity check to see if all the brackets match up. Write a function that takes in a string and returns truthy if all square [ ] round ( ) and curly { } brackets are properly paired and legally nested, or returns falsey otherwise.
+
+(defn balanced? [s]
+  (let [cleaned (filter #{\[ \] \( \) \{ \}} s)
+        close->open {\] \[ 
+                     \) \( 
+                     \} \{}]
+    (empty? (reduce (fn [stack x]
+                       (if-let [opp (close->open x)]
+                         (if (or (empty? stack)
+                                 (not= (peek stack) opp))
+                           (reduced [:not-empty])
+                           (pop stack))
+                         (conj stack x)))
+                     []
+                     cleaned))))
+
+(balanced? "This string has no brackets.")
+
+(balanced? "class Test {
+      public static void main(String[] args) {
+        System.out.println(\"Hello world.\");
+      }
+    }")
+
+(not (balanced? "(start, end]"))
+
+(not (balanced? "())"))
+
+(not (balanced? "[ { ] } "))
+
+(balanced? "([]([(()){()}(()(()))(([[]]({}()))())]((((()()))))))")
+
+(not (balanced? "([]([(()){()}(()(()))(([[]]({}([)))())]((((()()))))))"))
+
+(not (balanced? "["))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Decurry
+;; Difficulty:	Medium
+;; Topics:	partial-functions
+
+
+;; Write a function that accepts a curried function of unknown arity n. Return an equivalent function of n arguments. 
+
+
+(defn decurry [curried-fn]
+  (fn [& args]
+    (reduce (fn [f arg] (f arg)) curried-fn args)))
+
+(= 10 ((decurry 
+         (fn [a]
+             (fn [b]
+               (fn [c]
+                 (fn [d]
+                   (+ a b c d))))))
+       1 2 3 4))
+
+(= 24 ((decurry
+           (fn [a]
+             (fn [b]
+               (fn [c]
+                 (fn [d]
+                   (* a b c d))))))
+       1 2 3 4))
+
+(= 25 ((decurry
+           (fn [a]
+             (fn [b]
+               (* a b))))
+       5 5))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Prime Numbers
+;; Difficulty:	Medium
+;; Topics:	primes
+
+
+;; Write a function which returns the first x number of prime numbers.
+
+(defn primes [n]
+  (take n 
+        (mapcat #(loop [i 2]      
+                   (if (= i %) (list %)      
+                     (when (> (mod % i) 0)
+                       (recur (inc i)))))
+                (iterate inc 2))))
+
+(= (primes 2) [2 3])
+
+(= (primes 5) [2 3 5 7 11])
+
+(= (last (primes 100)) 541)
+
+
+
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Rotate a Sequence
+;; Difficulty:	Medium
+;; Topics:	seqs
+
+
+;; Write a function which can rotate a sequence in either direction.
+
+(defn rotate [n coll]  
+  (let [idx (mod n (count coll))]
+     (concat (drop idx coll) (take idx coll))))
+
+(= (rotate 2 [1 2 3 4 5]) '(3 4 5 1 2))
+
+(= (rotate -2 [1 2 3 4 5]) '(4 5 1 2 3))
+
+(= (rotate 6 [1 2 3 4 5]) '(2 3 4 5 1))
+
+(= (rotate 1 '(:a :b :c)) '(:b :c :a))
+
+(= (rotate -4 '(:a :b :c)) '(:c :a :b))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Reverse Interleave
+;; Difficulty:	Medium
+;; Topics:	seqs
+
+
+;; Write a function which reverses the interleave process into x number of subsequences.
+
+(defn f [coll n]
+  (apply map list (partition n coll)))
+
+(= (f [1 2 3 4 5 6] 2) '((1 3 5) (2 4 6)))
+
+(= (f (range 9) 3) '((0 3 6) (1 4 7) (2 5 8)))
+
+(= (f (range 10) 5) '((0 5) (1 6) (2 7) (3 8) (4 9)))
+(= (f (range 10) 5) '((0 5) (1 6) (2 7) (3 8) (4 9)))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Split by Type
+;; Difficulty:	Medium
+;; Topics:	seqs
+
+
+;; Write a function which takes a sequence consisting of items with different types and splits them up into a set of homogeneous sub-sequences. The internal order of each sub-sequence should be maintained, but the sub-sequences themselves can be returned in any order (this is why 'set' is used in the test cases).
+
+(defn split-by-type [coll] (vals (group-by type coll)))
+
+(= (set (split-by-type [1 :a 2 :b 3 :c])) #{[1 2 3] [:a :b :c]})
+
+(= (set (split-by-type [:a "foo"  "bar" :b])) #{[:a :b] ["foo" "bar"]})
+
+(= (set (split-by-type [[1 2] :a [3 4] 5 6 :b])) #{[[1 2] [3 4]] [:a :b] [5 6]})
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Sequence of pronunciations
+;; Difficulty:	Medium
+;; Topics:	seqs
+
+
+;; Write a function that returns a lazy sequence of "pronunciations" of a sequence of numbers. A pronunciation of each element in the sequence consists of the number of repeating identical numbers and the number itself. For example, [1 1] is pronounced as [2 1] ("two ones"), which in turn is pronounced as [1 2 1 1] ("one two, one one").
+
+;; Your function should accept an initial sequence of numbers, and return an infinite lazy sequence of pronunciations, each element being a pronunciation of the previous element.
+
+(defn pronounce [coll]
+  (letfn [(gen-next
+            [coll]
+            (->> coll
+                 (partition-by identity)
+                 (mapcat (fn [coll]
+                           [(count coll) (first coll)]))))]
+    (iterate gen-next (gen-next coll))))
+
+
+(= [[1 1] [2 1] [1 2 1 1]] (take 3 (pronounce [1])))
+
+(= [3 1 2 4] (first (pronounce [1 1 1 4 4])))
+
+(= [1 1 1 3 2 1 3 2 1 1] (nth (pronounce [1]) 6))
+
+(= 338 (count (nth (pronounce [3 2]) 15)))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Partially Flatten a Sequence
+;; Difficulty:	Medium
+;; Topics:	seqs
+
+
+;; Write a function which flattens any nested combination of sequential things (lists, vectors, etc.), but maintains the lowest level sequential items. The result should be a sequence of sequences with only one level of nesting.
+
+(defn almost-flatten [coll]
+  (lazy-seq
+    (if-not (sequential? (first coll))
+      (conj (empty coll) coll)
+      (mapcat almost-flatten coll))))
+
+(= (almost-flatten [["Do"] ["Nothing"]])
+   [["Do"] ["Nothing"]])
+
+(= (almost-flatten [[[[:a :b]]] [[:c :d]] [:e :f]])
+   [[:a :b] [:c :d] [:e :f]])
+
+(= (almost-flatten '((1 2)((3 4)((((5 6)))))))
+   '((1 2)(3 4)(5 6)))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Sequs Horribilis
+;; Difficulty:	Medium
+;; Topics:	seqs
+
+
+;; Create a function which takes an integer and a nested collection of integers as arguments. Analyze the elements of the input collection and return a sequence which maintains the nested structure, and which includes all elements starting from the head whose sum is less than or equal to the input integer.
+
+;; Sadly seeems to be horrendously dificult to preserve 
+;; arbitrarily nested collection types.
+(defn sequs-horribilis [n coll]
+  (letfn [(walk 
+            [sum ret coll]
+            (let [x (first coll)]
+              (cond
+                (or (empty? coll)
+                    (and (number? x)
+                         (> (+ sum x) n))) 
+                [sum ret]
+                
+                (number? x)
+                (recur (+ sum x)
+                       (conj ret x)
+                       (next coll))
+                 
+                :else
+                (let [[new-sum result] (walk sum [] x)]
+                  (recur new-sum
+                         (conj ret result)
+                         (next coll))))))]
+    (second (walk 0 [] coll))))
+
+(=  (sequs-horribilis 10 [1 2 [3 [4 5] 6] 7])
+   '(1 2 (3 (4))))
+
+(=  (sequs-horribilis 30 [1 2 [3 [4 [5 [6 [7 8]] 9]] 10] 11])
+   '(1 2 (3 (4 (5 (6 (7)))))))
+
+(=  (sequs-horribilis 9 (range))
+   '(0 1 2 3))
+
+(=  (sequs-horribilis 1 [[[[[1]]]]])
+   '(((((1))))))
+(=  (sequs-horribilis 1 [[[[[1]]]]])
+   '(((((1))))))
+
+(=  (sequs-horribilis 0 [1 2 [3 [4 5] 6] 7])
+   '())
+
+(=  (sequs-horribilis 0 [0 0 [0 [0]]])
+   '(0 0 (0 (0))))
+
+(=  (sequs-horribilis 1 [-10 [1 [2 3 [4 5 [6 7 [8]]]]]])
+   '(-10 (1 (2 3 (4)))))
+
+
+
+
+
+
+
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Generating k-combinations
+;; Difficulty:	Medium
+;; Topics:	seqs combinatorics
+
+
+;; Given a sequence S consisting of n elements generate all k-combinations of S, i. e. generate all possible sets consisting of k distinct elements taken from S. The number of k-combinations for a sequence is equal to the binomial coefficient.
+
+(defn combinations
+  [k coll]
+  (letfn [(comb-aux
+	       [m start]
+	       (if (= 1 m)
+	         (for [x (range start (count coll))]
+	           (list x))
+	         (for [x (range start (count coll))
+		           xs (comb-aux (dec m) (inc x))]
+	           (cons x xs))))]
+    (let [indices (comb-aux k 0)
+          coll (vec coll)]
+      (into #{} (map (fn [idxs] (into #{} (map coll idxs))) indices)))))
+
+(= (combinations 1 #{4 5 6}) #{#{4} #{5} #{6}})
+
+(= (combinations 10 #{4 5 6}) #{})
+
+(= (combinations 2 #{0 1 2}) #{#{0 1} #{0 2} #{1 2}})
+
+(= (combinations 3 #{0 1 2 3 4}) #{#{0 1 2} #{0 1 3} #{0 1 4} #{0 2 3} #{0 2 4}
+                         #{0 3 4} #{1 2 3} #{1 2 4} #{1 3 4} #{2 3 4}})
+
+(= (combinations 4 #{[1 2 3] :a "abc" "efg"}) #{#{[1 2 3] :a "abc" "efg"}})
+
+(= (combinations 2 #{[1 2 3] :a "abc" "efg"}) #{#{[1 2 3] :a} #{[1 2 3] "abc"} #{[1 2 3] "efg"}
+                                    #{:a "abc"} #{:a "efg"} #{"abc" "efg"}})
+
+
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Count Occurrences
+;; Difficulty:	Medium
+;; Topics:	seqs core-functions
+
+
+;; Write a function which returns a map containing the number of occurences of each distinct item in a sequence.
+
+(defn count-occurences [coll]
+  (into {}
+        (map (fn [[k v]] [k (count v)])
+             (group-by identity coll))))
+
+(= (count-occurences [1 1 2 3 2 1 1]) {1 4, 2 2, 3 1})
+
+(= (count-occurences [:b :a :b :a :b]) {:a 2, :b 3})
+
+(= (count-occurences '([1 2] [1 3] [1 3])) {[1 2] 1, [1 3] 2})
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Find Distinct Items
+;; Difficulty:	Medium
+;; Topics:	seqs core-functions
+
+
+;; Write a function which removes the duplicates from a sequence. Order of the items must be maintained.
+
+(defn dedupe* [coll] 
+  (loop [found #{}
+         result (empty coll)
+         curr coll]
+    (if (empty? curr)
+      (if (list? result) (reverse result) result)
+      (if (contains? found (first curr))
+        (recur found
+               result
+               (rest curr))
+        (recur (conj found (first curr))
+               (conj result (first curr))
+               (rest curr))))))
+
+(= (dedupe* [1 2 1 3 1 2 4]) [1 2 3 4])
+
+(= (dedupe* [:a :a :b :b :c :c]) [:a :b :c])
+
+(= (dedupe* '([2 4] [1 2] [1 3] [1 3])) '([2 4] [1 2] [1 3]))
+
+(= (dedupe* (range 50)) (range 50))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Partition a Sequence
+;; Difficulty:	Medium
+;; Topics:	seqs core-functions
+
+
+;; Write a function which returns a sequence of lists of x items each. Lists of less than x items should not be returned.
+
+(defn partition* [n coll]
+  (let [section (take n coll)]
+   (when (= (count section) n) 
+     (cons section (partition* n (drop n coll))))))
+
+(= (partition* 3 (range 9)) '((0 1 2) (3 4 5) (6 7 8)))
+
+(= (partition* 2 (range 8)) '((0 1) (2 3) (4 5) (6 7)))
+
+(= (partition* 3 (range 8)) '((0 1 2) (3 4 5)))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Sequence Reductions
+;; Difficulty:	Medium
+;; Topics:	seqs core-functions
+
+
+;; Write a function which behaves like reduce, but returns each intermediate value of the reduction. Your function must accept either two or three arguments, and the return sequence must be lazy.
+
+(defn reductions*
+  ([f coll] (reductions* f (first coll) (rest coll)))
+  ([f init coll]
+   (lazy-seq 
+    (if (empty? coll)
+      (list init)
+      (cons init
+        (reductions* f (f init (first coll)) (rest coll)))))))
+
+(= (take 5 (reductions* + (range))) [0 1 3 6 10])
+
+(= (reductions* conj [1] [2 3 4]) [[1] [1 2] [1 2 3] [1 2 3 4]])
+
+(= (last (reductions* * 2 [3 4 5])) (reduce * 2 [3 4 5]) 120)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Insert between two items
+;; Difficulty:	Medium
+;; Topics:	seqs core-functions
+
+
+;; Write a function that takes a two-argument predicate, a value, and a collection; and returns a new collection where the value is inserted between every two items that satisfy the predicate.
+
+(defn insert-between [pred x coll]
+  (mapcat (fn [[a b :as xs]]
+            (cond (= b :end) [a]
+                  (pred a b) [a x]
+                  :else [a]))
+          (partition 2 1 (concat coll (list :end)))))
+
+(= '(1 :less 6 :less 7 4 3) (insert-between < :less [1 6 7 4 3]))
+
+(= '(2) (insert-between > :more [2]))
+
+(= [0 1 :x 2 :x 3 :x 4]  (insert-between #(and (pos? %) (< % %2)) :x (range 5)))
+
+(empty? (insert-between > :more ()))
+
+(= [0 1 :same 1 2 3 :same 5 8 13 :same 21]
+   (take 12 (->> [0 1]
+                 (iterate (fn [[a b]] [b (+ a b)]))
+                 (map first) ; fibonacci numbers
+                 (insert-between 
+                   (fn [a b] ; both even or both odd
+                       (= (mod a 2) (mod b 2)))
+                     :same))))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Global take-while
+;; Difficulty:	Medium
+;; Topics:	seqs higher-order-functions
+
+
+;; take-while is great for filtering sequences, but it limited: you can only examine a single item of the sequence at a time. What if you need to keep track of some state as you go over the sequence?
+
+;; Write a function which accepts an integer n, a predicate p, and a sequence. It should return a lazy sequence of items in the list up to, but not including, the nth item that satisfies the predicate.
+
+(defn global-take-while 
+  [n pred coll]
+  (lazy-seq 
+    (let [[a b] (split-with (comp not pred) coll)
+          n (dec n)]
+      (concat a (if (== n 0) nil          
+                  (cons (first b) 
+                        (global-take-while n pred (rest b))))))))
+
+
+(= [2 3 5 7 11 13]
+   (global-take-while 4 #(= 2 (mod % 3))
+         [2 3 5 7 11 13 17 19 23]))
+
+(= ["this" "is" "a" "sentence"]
+   (global-take-while 3 #(some #{\i} %)
+         ["this" "is" "a" "sentence" "i" "wrote"]))
+
+
+(= ["this" "is"]
+   (global-take-while 1 #{"a"}
+         ["this" "is" "a" "sentence" "i" "wrote"]))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Equivalence Classes
 ;; Difficulty:	Medium
 ;; Topics:	
 
 
 ;; A function f defined on a domain D induces an equivalence relation on D, as follows: a is equivalent to b with respect to f if and only if (f a) is equal to (f b). Write a function with arguments f and D that computes the equivalence classes of D with respect to f.
 
-(def eq-classes (comp set #(map set %) vals group-by*))
+(def eq-classes (comp set #(map set %) vals group-by))
 
 (= (eq-classes #(* % %) #{-2 -1 0 1 2})
    #{#{0} #{1 -1} #{2 -2}})
@@ -937,6 +1457,154 @@
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-var'>#&#x27;user/oscilrate</span>","value":"#'user/oscilrate"}
+;; <=
+
+;; @@
+;; Power Set
+;; Difficulty:	Medium
+;; Topics:	set-theory
+
+
+;; Write a function which generates the power set of a given set. The power set of a set x is the set of all subsets of x, including the empty set and x itself.
+
+(defn power-set [coll]
+  (let [n (count coll)
+        coll-vec (vec coll)]
+    (letfn [(comb-iter 
+              [k start]
+              (if (== k 1)
+                (for [x (range start n)]
+                  (list x))
+                (for [x  (range start n)
+                      xs (comb-iter (dec k) (inc x))]
+                  (cons x xs))))]
+      (->> (for [k (range (inc n))]
+             (comb-iter k 0))
+           (map set)
+           (mapcat (fn [s] (map #(into #{} (map coll-vec %)) s)))
+           (into #{#{}})))))
+
+(= (power-set #{1 :a}) #{#{1 :a} #{:a} #{} #{1}})
+
+(= (power-set #{}) #{#{}})
+
+(= (power-set #{1 2 3})
+   #{#{} #{1} #{2} #{3} #{1 2} #{1 3} #{2 3} #{1 2 3}})
+
+(= (count (power-set (into #{} (range 10)))) 1024)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Word Sorting
+;; Difficulty:	Medium
+;; Topics:	sorting
+
+
+;; Write a function that splits a sentence up into a sorted list of words. Capitalization should not affect sort order and punctuation should be ignored.
+
+(defn word-sorting [s]
+  (sort-by (fn [s] (clojure.string/lower-case s))
+           (map (fn [s]
+                  (clojure.string/replace s #"[^a-zA-Z]+" ""))
+                (clojure.string/split s #" "))))
+
+(= (word-sorting  "Have a nice day.")
+   ["a" "day" "Have" "nice"])
+
+(= (word-sorting  "Clojure is a fun language!")
+   ["a" "Clojure" "fun" "is" "language"])
+
+(= (word-sorting  "Fools fall for foolish follies.")
+   ["fall" "follies" "foolish" "Fools" "for"])
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; intoCamelCase
+;; Difficulty:	Medium
+;; Topics:	strings
+
+
+;; When working with java, you often need to create an object with fieldsLikeThis, but you'd rather work with a hashmap that has :keys-like-this until it's time to convert. Write a function which takes lower-case hyphen-separated strings and converts them to camel-case strings.
+
+(defn to-camel [s]
+  (loop [ret []
+         s s]
+    (cond (empty? s) 
+          (apply str ret)
+          
+          (= (first s) \-)
+          (let [x1 (first s)
+                x2 (second s)]
+            (if (nil? x2)
+              (apply str (conj ret x1))
+              (recur (conj ret (clojure.string/upper-case x2))
+                     (nnext s))))
+          
+          :else
+          (recur (conj ret (first s))
+                 (next s)))))
+
+(= (to-camel "something") "something")
+
+(= (to-camel "multi-word-key") "multiWordKey")
+
+(= (to-camel "leaveMeAlone") "leaveMeAlone")
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Write Roman Numerals
+;; Difficulty:	Medium
+;; Topics:	strings math
+
+
+;; This is the inverse of Problem 92, but much easier. Given an integer smaller than 4000, return the corresponding roman numeral in uppercase, adhering to the subtractive principle.
+
+(defn roman-numeral [n]
+  (let [table [1000 \M 500 \D 100 \C 50 \L 10 \X 5 \V 1 \I]]
+    (loop [n n ret [] table table]
+      (let [[x0 r0 x1 r1 x2 r2] table]
+        (cond (<= n 0) (apply str ret)
+                
+              (>= n x0)
+              (recur (- n x0) (conj ret r0) table)
+                
+              (or (and (= r0 \L) (>= n (- x0 x1)))
+                  (and (= r0 \V) (>= n (- x0 x1))))
+              (recur (- n (- x0 x1)) (conj ret r1 r0) (subvec table 2))
+                
+                
+              (and (not (nil? x2)) 
+                   (>= n (- x0 x2)))
+              (recur (- n (- x0 x2)) (conj ret r2 r0) (subvec table 2))
+                
+              :else
+              (recur n ret (subvec table 2)))))))
+
+(= "I" (roman-numeral 1))
+
+(= "XXX" (roman-numeral 30))
+
+(= "IV" (roman-numeral 4))
+
+(= "CXL" (roman-numeral 140))
+
+(= "DCCCXXVII" (roman-numeral 827))
+
+(= "MMMCMXCIX" (roman-numeral 3999))
+
+(= "XLVIII" (roman-numeral 48))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
 ;; <=
 
 ;; @@
@@ -998,74 +1666,377 @@
 
 ;;Given a variable number of sets of integers, create a function which returns true iff all of the sets have a non-empty subset with an equivalent summation.
 
-(defn [& sets]
-  (let [sorted (map sort sets)]
-    (boolean (some (fn [& sums]
-                     (apply = sums))
-                   (for []))))
+(defn subset-sum [& colls]
+  (let [vecs (mapv vec colls)
+        smallest (reduce max (map #(reduce + (filter neg? %)) colls))
+        largest (reduce min (map #(reduce + (filter pos? %)) colls))
+        subset-sum? (fn [g [x & xs] s] (when x (or (= x s) (g g xs s) (g g xs (- s x)))))
+        g (memoize subset-sum?)]
+    (boolean (first (for [s (range smallest (inc largest))
+                          :when (every? true? (map #(g g % s) vecs))]
+                      s)))))
 
 
-(= true  (__ #{-1 1 99} 
+(= true  (subset-sum #{-1 1 99} 
              #{-2 2 888}
              #{-3 3 7777})) ; ex. all sets have a subset which sums to zero
 
-(= false (__ #{1}
+(= false (subset-sum #{1}
              #{2}
              #{3}
              #{4}))
 
-(= true  (__ #{1}))
+(= true  (subset-sum #{1}))
 
-(= false (__ #{1 -3 51 9} 
+(= false (subset-sum #{1 -3 51 9} 
              #{0} 
              #{9 2 81 33}))
 
-(= true  (__ #{1 3 5}
+(= true  (subset-sum #{1 3 5}
              #{9 11 4}
              #{-3 12 3}
              #{-3 4 -2 10}))
 
-(= false (__ #{-1 -2 -3 -4 -5 -6}
+(= false (subset-sum #{-1 -2 -3 -4 -5 -6}
              #{1 2 3 4 5 6 7 8 9}))
 
-(= true  (__ #{1 3 5 7}
+(= true  (subset-sum #{1 3 5 7}
              #{2 4 6 8}))
 
-(= true  (__ #{-1 3 -5 7 -9 11 -13 15}
+(= true  (subset-sum #{-1 3 -5 7 -9 11 -13 15}
              #{1 -3 5 -7 9 -11 13 -15}
              #{1 -1 2 -2 4 -4 8 -8}))
 
-(= true  (__ #{-10 9 -8 7 -6 5 -4 3 -2 1}
+(= true  (subset-sum #{-10 9 -8 7 -6 5 -4 3 -2 1}
              #{10 -9 8 -7 6 -5 4 -3 2 -1}))
 ;; @@
-
-;; @@
-(defn winner [trump]
-  (let [ranks {:club 0
-               :diamond 14
-               :heart 28
-               :spade 32}]
-    (fn [cards]
-      (->> cards
-           (apply sorted-set-by 
-                  (fn [a b]
-                    (> (+ (:rank a)
-                          (ranks (:suit a))
-                          (if (= (:suit a) trump) 44 0))
-                       (+ (:rank b)
-                          (ranks (:suit b))
-                          (if (= (:suit b) trump) 44 0)))))
-           first))))
-;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-var'>#&#x27;user/winner</span>","value":"#'user/winner"}
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
 ;; <=
 
 ;; @@
-(sort [1 2 3 2])
+;; The Big Divide
+;; Difficulty:	Medium
+;; Topics:	math
+
+
+;; Write a function which calculates the sum of all natural numbers under n (first argument) which are evenly divisible by at least one of a and b (second and third argument). Numbers a and b are guaranteed to be coprimes.
+
+;; Note: Some test cases have a very large n, so the most obvious solution will exceed the time limit.
+
+
+(defn big-divide [n a b]
+   (let [n (dec n)
+         n_a (bigint (/ (- n (rem n a)) a))
+         n_b (bigint (/ (- n (rem n b)) b))
+         ab  (* a b)
+         n_ab (bigint (/ (- n (rem n ab)) ab))]
+     (- (+ (* (/ (* n_a (inc n_a)) 2) a)
+           (* (/ (* n_b (inc n_b)) 2) b))
+        (+ (* (/ (* n_ab (inc n_ab)) 2) ab)))))
+
+(= 0 (big-divide 3 17 11))
+
+(= 23 (big-divide 10 3 5))
+
+(= 233168 (big-divide 1000 3 5))
+
+(= "2333333316666668" (str (big-divide 100000000 3 5)))
+
+(= "110389610389889610389610"
+  (str (big-divide (* 10000 10000 10000) 7 11)))
+
+(= "1277732511922987429116"
+  (str (big-divide (* 10000 10000 10000) 757 809)))
+
+(= "4530161696788274281"
+  (str (big-divide (* 10000 10000 1000) 1597 3571)))
 ;; @@
 ;; =>
-;;; {"type":"list-like","open":"<span class='clj-list'>(</span>","close":"<span class='clj-list'>)</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-long'>1</span>","value":"1"},{"type":"html","content":"<span class='clj-long'>2</span>","value":"2"},{"type":"html","content":"<span class='clj-long'>2</span>","value":"2"},{"type":"html","content":"<span class='clj-long'>3</span>","value":"3"}],"value":"(1 2 2 3)"}
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Prime Sandwitch
+;; Difficulty:	Medium
+;; Topics:	math
+
+
+;; A balanced prime is a prime number which is also the mean of the primes directly before and after it in the sequence of valid primes. Create a function which takes an integer n, and returns true iff it is a balanced prime.
+
+;; My horrible solution.
+(defn prime-sandwich? [n]
+  (letfn [(binary-search [n x]
+            "adapted from:
+             http://stackoverflow.com/questions/8949837/binary-
+             search-in-clojure-implementation-performance"
+            (loop [l 0 h (unchecked-dec n)]
+              (if (<= h (inc l))
+                (cond
+                  (== (* l x) n) l
+                  (== (* h x) n) h
+                  :else nil)
+                (let [m (unchecked-add l (bit-shift-right 
+                                    (unchecked-subtract h l) 1))]
+                  (if (< (* m x) n)
+                    (recur (unchecked-inc m) h)
+                    (recur l m))))))
+          
+          (prime? 
+            [n]
+            (if (< n 2) false      
+              (loop [x 2]
+                (cond (> x (/ n 2)) true
+                (binary-search n x) false
+                :else (recur (unchecked-inc x))))))
+          
+          (nearest-lesser-prime [n]
+            (loop [x (unchecked-dec n)]
+              (cond
+                (<= x 2) nil
+                (prime? x) x
+                :else (recur (unchecked-dec x)))))
+          
+          (nearest-greater-prime 
+            [n]
+            (loop [x (unchecked-inc n)]
+              (if (prime? x) x
+                (recur (unchecked-inc x)))))
+          
+          (prime-sandwitch?* [n]
+            (cond
+              (== n 0) false
+              (== n 1) false
+              (== n 2) false
+              (== n 3) false
+              (not (prime? n)) false
+              :else
+              (let [x (nearest-lesser-prime n)
+                    y (nearest-greater-prime n)]
+                (= n (/ (+ x y) 2)))))]
+    
+    (prime-sandwitch?* n)))
+
+
+
+(= false (prime-sandwich? 4))
+
+(= true (prime-sandwich? 563))
+
+(= 1103 (nth (filter prime-sandwich? (range)) 15))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Digits and bases
+;; Difficulty:	Medium
+;; Topics:	math
+
+
+;; Write a function which returns a sequence of digits of a non-negative number (first argument) in numerical system with an arbitrary base (second argument). Digits should be represented with their integer values, e.g. 15 would be [1 5] in base 10, [1 1 1 1] in base 2 and [15] in base 16. 
+
+(defn convert [n base]
+  (if (< n base)
+    [n]
+    (into (convert (quot n base) base)
+          (convert (rem n base) base))))
+
+(= [1 2 3 4 5 0 1] (convert 1234501 10))
+
+(= [0] (convert 0 11))
+
+(= [1 0 0 1] (convert 9 2))
+
+(= [1 0] (let [n (rand-int 100000)](convert n n)))
+
+(= [16 18 5 24 15 1] (convert Integer/MAX_VALUE 42))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; The Balance of N
+;; Difficulty:	Medium
+;; Topics:	math
+
+
+;; A balanced number is one whose component digits have the same sum on the left and right halves of the number. Write a function which accepts an integer n, and returns true iff n is balanced.
+
+(defn balance-of-n [n]
+  (let [s (str n)
+        digits-cnt (count s)
+        mid (unchecked-divide-int digits-cnt 2)]
+    (if (even? digits-cnt)
+      (= (apply + (map int (take mid s)))
+         (apply + (map int (drop mid s))))
+      
+      (= (apply + (map int (take mid s)))
+         (apply + (map int (drop (inc mid) s)))))))
+
+(= true (balance-of-n 11))
+
+(= true (balance-of-n 121))
+
+(= false (balance-of-n 123))
+
+(= true (balance-of-n 0))
+
+(= false (balance-of-n 88099))
+
+(= true (balance-of-n 89098))
+
+(= true (balance-of-n 89089))
+
+(= (take 20 (filter balance-of-n (range)))
+   [0 1 2 3 4 5 6 7 8 9 11 22 33 44 55 66 77 88 99 101])  
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Happy numbers
+;; Difficulty:	Medium
+;; Topics:	math
+
+
+;; Happy numbers are positive integers that follow a particular formula: take each individual digit, square it, and then sum the squares to get a new number. Repeat with the new number and eventually, you might get to a number whose squared sum is 1. This is a happy number. An unhappy number (or sad number) is one that loops endlessly. Write a function that determines if a number is happy or not.
+
+(defn happy-numbers [n]
+  (let [m {\0 0 \1 1 \2 2 \3 3 \4 4 \5 5 \6 6 \7 7 \8 8 \9 9}
+        parse-digits
+        (fn [n] (mapv m (str n)))
+        sum-of-squares
+        (fn [nums]
+          (apply + (map #(* % %) nums)))]
+    (loop [ret n vists #{} cnt 0]
+      (cond
+        (= ret 1) true
+        (contains? vists ret) false
+        :else
+        (recur (sum-of-squares (parse-digits ret)) 
+               (conj vists ret) (inc cnt))))))
+
+(= (happy-numbers 7) true)
+
+(= (happy-numbers 986543210) true)
+
+(= (happy-numbers 2) false)
+
+(= (happy-numbers 3) false)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Identify keys and values
+;; Difficulty:	Medium
+;; Topics:	maps seqs
+
+
+;; Given an input sequence of keywords and numbers, create a map such that each key in the map is a keyword, and the value is a sequence of all the numbers (if any) between it and the next keyword in the sequence.
+
+
+(defn id-kvs [coll]
+  (->> (reduce (fn [ret x]
+                 (if (number? x)
+                   (conj (pop ret) (conj (peek ret) x))
+                   (conj ret x [])))
+               []
+               coll)
+       (partition 2)
+       (map vec)
+       (into {})))
+
+(= {} (id-kvs []))
+
+(= {:a [1]} (id-kvs [:a 1]))
+
+(= {:a [1], :b [2]} (id-kvs [:a 1, :b 2]))
+
+(= {:a [1 2 3], :b [], :c [4]} (id-kvs [:a 1 2 3 :b :c 4]))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Juxtaposition
+;; Difficulty:	Medium
+;; Topics:	higher-order-functions core-functions
+
+
+;; Take a set of functions and return a new function that takes a variable number of arguments and returns a sequence containing the result of applying each function left-to-right to the argument list.
+
+(defn juxt* [& fs]
+  (fn [& args]
+    (map #(apply % args) fs)))
+
+(= [21 6 1] ((juxt* + max min) 2 3 5 1 6 4))
+
+(= ["HELLO" 5] ((juxt* #(.toUpperCase %) count) "hello"))
+
+(= [2 6 4] ((juxt* :a :c :b) {:a 2, :b 4, :c 6, :d 8 :e 10}))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Function Composition
+;; Difficulty:	Medium
+;; Topics:	higher-order-functions core-functions
+
+
+;; Write a function which allows you to create function compositions. The parameter list should take a variable number of functions, and create a function that applies them from right-to-left.
+
+
+(defn comp* [& fns]
+  (fn [& xs]
+    ((fn call [fns]
+       (if (empty? (rest fns)) 
+         (apply (first fns) xs)
+         ((first fns) (call (rest fns)))))  
+     fns)))
+
+(= [3 2 1] ((comp* rest reverse) [1 2 3 4]))
+
+(= 5 ((comp* (partial + 3) second) [1 2 3 4]))
+
+(= true ((comp* zero? #(mod % 8) +) 3 5 7 9))
+
+(= "HELLO" ((comp* #(.toUpperCase %) #(apply str %) take) 5 "hello world"))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Flipping out
+;; Difficulty:	Medium
+;; Topics:	higher-order-functions
+
+;; Write a higher-order function which flips the order of the arguments of an input function.
+
+(defn flip [f]
+  (fn [& args]
+    (apply f (reverse args))))
+
+
+(= 3 ((flip nth) 2 [1 2 3 4 5]))
+
+(= true ((flip >) 7 8))
+
+(= 4 ((flip quot) 2 8))
+
+(= [1 2 3] ((flip take) [1 2 3 4 5] 3))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
 ;; <=
 
 ;; @@
@@ -1114,6 +2085,299 @@
 ;;; :heart
 ;;; 
 ;; <-
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Universal Computation Engine
+;; Difficulty:	Medium
+;; Topics:	functions
+
+
+;; Given a mathematical formula in prefix notation, return a function that calculates the value of the formula. The formula can contain nested calculations using the four basic mathematical operators, numeric constants, and symbols representing variables. The returned function has to accept a single parameter containing the map of variable names to their values. 
+
+(defn universal-compute [form]
+  (fn [m]
+    (letfn [(evaluate 
+              [form]
+              (cond
+                (number? form) form
+                (list? form)        
+                (let [op (first form)]
+                  (case op
+                    / (apply / (map evaluate (next form))) 
+                    * (apply * (map evaluate (next form)))
+                    + (apply + (map evaluate (next form)))
+                    - (apply - (map evaluate (next form)))))
+                :else
+                (m form)))]
+      (evaluate form))))
+
+(= 2 ((universal-compute 
+       '(/ a b))
+       '{b 8 a 16}))
+
+(= 8 ((universal-compute
+        '(+ a b 2))
+        '{a 2 b 4}))
+
+(= [6 0 -4]
+     (map (universal-compute
+            '(* (+ 2 a)
+                  (- 10 b)))
+            '[{a 1 b 8}
+              {b 5 a -2}
+              {a 2 b 11}]))
+
+(= 1 ((universal-compute
+             '(/ (+ x 2)
+              (* 3 (+ y 1))))
+      '{x 4 y 1}))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Reimplement Trampoline
+;; Difficulty:	Medium
+;; Topics:	core-functions
+
+;; Reimplement the function described in "Intro to Trampoline".
+
+(defn tramp [f & args]
+  (loop [x (apply f args)]
+    (if (fn? x) (recur (x)) x)))
+
+(= (letfn [(triple [x] #(sub-two (* 3 x)))
+          (sub-two [x] #(stop?(- x 2)))
+          (stop? [x] (if (> x 50) x #(triple x)))]
+    (tramp triple 2))
+  82)
+
+(= (letfn [(my-even? [x] (if (zero? x) true #(my-odd? (dec x))))
+          (my-odd? [x] (if (zero? x) false #(my-even? (dec x))))]
+    (map (partial tramp my-even?) (range 6)))
+  [true false true false true false])
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Merge with a Function
+;; Difficulty:	Medium
+;; Topics:	core-functions
+
+
+;; Write a function which takes a function f and a variable number of maps. Your function should return a map that consists of the rest of the maps conj-ed onto the first. If a key occurs in more than one map, the mapping(s) from the latter (left-to-right) should be combined with the mapping in the result by calling (f val-in-result val-in-latter)
+
+
+(defn merge-with* [f & ms]
+  (reduce (fn walk [res [[k v] & xs]]
+            (if k
+              (if (res k)
+                (recur (assoc res k (f (res k) v)) xs)
+                (recur (assoc res k v) xs))
+              res))
+          (first ms)
+          (map vec (next ms))))
+
+
+(= (merge-with* * {:a 2, :b 3, :c 4} {:a 2} {:b 2} {:c 5})
+   {:a 4, :b 6, :c 20})
+
+(= (merge-with* - {1 10, 2 20} {1 3, 2 10, 3 15})
+   {1 7, 2 10, 3 15})
+
+(= (merge-with* concat {:a [3], :b [6]} {:a [4 5], :c [8 9]} {:b [7]})
+   {:a [3 4 5], :b [6 7], :c [8 9]})
+
+(= (merge-with* concat {:a [3], :b [6]} {:a [4 5], :c [8 9]} {:b [7]})
+   {:a [3 4 5], :b [6 7], :c [8 9]})
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Intervals
+;; Difficulty:	Medium
+;; Topics:	
+
+
+;; Write a function that takes a sequence of integers and returns a sequence of "intervals". Each interval is a a vector of two integers, start and end, such that all integers between start and end (inclusive) are contained in the input sequence.
+
+(defn intervals [coll]
+  (let [sorted (sort coll)
+        prev   (first sorted)]
+    (if (nil? prev) []
+      (loop [coll (next sorted) prev prev ret [[prev]]]
+        (cond 
+          (empty? coll)
+          ret
+      
+          (>= (inc prev) (first coll))
+          (recur (next coll)
+                 (first coll)
+                 (assoc-in ret [(-> ret count dec) 1] (first coll)))
+          
+          
+      
+          :else
+          (recur (next coll)
+                 (first coll)
+                 (conj ret [(first coll) (first coll)])))))))
+
+(= (intervals [1 2 3]) [[1 3]])
+
+(= (intervals [10 9 8 1 2 3]) [[1 3] [8 10]])
+
+(= (intervals [1 1 1 1 1 1 1]) [[1 1]])
+
+(= (intervals []) [])
+
+(= (intervals [19 4 17 1 3 10 2 13 13 2 16 4 2 15 13 9 6 14 2 11])
+              [[1 4] [6 6] [9 11] [13 17] [19 19]])
+ 
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Euler's Totient Function
+;; Difficulty:	Medium
+;; Topics:	
+
+
+;; Two numbers are coprime if their greatest common divisor equals 1. Euler's totient function f(x) is defined as the number of positive integers less than x which are coprime to x. The special case f(1) equals 1. Write a function which calculates Euler's totient function.
+
+(defn totient  [x]
+  (letfn [(gcd [x y] (if (zero? y) x (recur y (mod x y))))]
+    (if (= x 1) 1
+      (count (filter #(= % 1) (map gcd (repeat x) (range 1 x)))))))
+
+(= (totient 1) 1)
+
+(= (totient 10) (count '(1 3 7 9)) 4)
+
+(= (totient 40) 16)
+
+(= (totient 99) 60)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Perfect Numbers
+;; Difficulty:	Medium
+;; Topics:	
+
+
+;; A number is "perfect" if the sum of its divisors equal the number itself. 6 is a perfect number because 1+2+3=6. Write a function which returns true for perfect numbers and false otherwise.
+
+(defn perfect-numbers [n]
+  (letfn [(divisors [n] (filter #(zero? (mod n %)) (range 1  n)))]
+    (= (reduce + (divisors n)) n)))
+
+(= (perfect-numbers 6) true)
+
+(= (perfect-numbers 7) false)
+
+(= (perfect-numbers 496) true)
+
+(= (perfect-numbers 500) false)
+
+(= (perfect-numbers 8128) true)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Anagram Finder
+;; Difficulty:	Medium
+;; Topics:	
+
+
+;; Write a function which finds all the anagrams in a vector of words. A word x is an anagram of word y if all the letters in x can be rearranged in a different order to form y. Your function should return a set of sets, where each sub-set is a group of words which are anagrams of each other. Each sub-set should have at least two words. Words without any anagrams should not be included in the result.
+
+;; original solution.
+#_(defn anagram-finder [words]
+  (letfn [(rotate
+           [coll]
+           (conj (subvec coll 1) (first coll)))
+          (rotations
+           [coll]
+           (take (count coll) (iterate rotate coll)))
+          (rotate-and-join
+           [coll idx]
+           (let [[l r] (split-at idx coll)]
+            (map #(concat % r) (rotations (vec l)))))
+          (permutations
+           [coll]
+           (reduce 
+            (fn [res idx] 
+              (mapcat rotate-and-join res (repeat idx)))
+            [coll]
+            (range (count coll) 1 -1)))]
+     (loop [words (set words)
+            result #{}]
+       (let [word  (first words)
+             chs   (seq word)
+             perms (into #{} (map (partial apply str) (permutations chs)))]
+         (if (empty? words)
+           (clojure.set/select #(> (count %) 1) result)
+           (recur
+            (clojure.set/difference words perms #{word})
+            (conj result (cloure.set/intersection perms words))))))))
+
+;; Turns ou anagrams have equivalent histograms:
+(defn anagrams [words]
+  (->> words (group-by frequencies) vals (map set) (filter #(> (count %) 1)) set))
+
+(= (anagrams ["meat" "mat" "team" "mate" "eat"])
+   #{#{"meat" "team" "mate"}})
+
+(= (anagrams ["veer" "lake" "item" "kale" "mite" "ever"])
+   #{#{"veer" "ever"} #{"lake" "kale"} #{"mite" "item"}})
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Filter Perfect Squares
+;; Difficulty:	Medium
+;; Topics:	
+
+
+;; Given a string of comma separated integers, write a function which returns a new comma separated string that only contains the numbers which are perfect squares.
+
+
+(defn perfect-squares [s]
+  (let [nums 
+        (map (fn [s] (. Integer parseInt s))     
+             (clojure.string/split s #","))
+        
+        perfect-square
+        (fn [n]
+          (loop [x 1]
+           (if (>= x n) nil
+            (if (and (= (/ n x) x) (zero? (mod n x)))
+              n
+              (recur (inc x))))))]
+    (clojure.string/join ","                    
+     (map str (filter perfect-square nums)))))
+
+(= (perfect-squares "4,5,6,7,8,9") "4,9")
+
+(= (perfect-squares "15,16,25,36,37") "16,25,36")
+
+;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
 ;; <=
@@ -1307,6 +2571,45 @@
           (check #(= %2 [(+ m %) n]) column)
           (check #(= %2 [(+ m %) (+ n %)]) diagonal)))
    true)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
+;; <=
+
+;; @@
+;; Black Box Testing
+;; Difficulty:	Medium
+;; Topics:	seqs testing
+
+
+;; Clojure has many sequence types, which act in subtly different ways. The core functions typically convert them into a uniform "sequence" type and work with them that way, but it can be important to understand the behavioral and performance differences so that you know which kind is appropriate for your application.
+
+;; Write a function which takes a collection and returns one of :map, :set, :list, or :vector - describing the type of collection it was given.
+;; You won't be allowed to inspect their class or use the built-in predicates like list? - the point is to poke at them and understand their behavior.
+
+;; weirdest problem ever?
+(defn bbt [coll]
+  (cond 
+   (= (empty coll) #{})
+   :set
+
+   (= (empty coll) {})
+   :map
+
+   :else  
+   (if (= (last (conj coll :hello :world)) :world)  
+     :vector
+     :list)))
+
+(= :map (bbt {:a 1, :b 2}))
+
+(= :list (bbt (range (rand-int 20))))
+
+(= :vector (bbt [1 2 3 4 5 6]))
+
+(= :set (bbt #{10 (rand-int 5)}))
+
+(= [:map :set :vector :list] (map bbt [{} #{} [] ()]))
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
