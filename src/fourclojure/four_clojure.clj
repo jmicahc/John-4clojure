@@ -412,10 +412,8 @@
 ;; Write a function which separates the items of a sequence by an arbitrary value.
 
 (defn ipose [x coll]
-  (lazy-seq 
-    (if (empty? (rest coll))
-      (if (first coll) (list (first coll)) nil)
-      (cons (first coll) (cons x (ipose x (rest coll)))))))
+  (mapcat (fn [[a b]] (if b [a x] [a])) (partition 2 1 [] coll)))
+
 
 (= (ipose 0 [1 2 3]) [1 0 2 0 3])
 (= (apply str (ipose ", " ["one" "two" "three"])) "one, two, three")
