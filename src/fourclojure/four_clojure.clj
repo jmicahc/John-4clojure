@@ -1,28 +1,14 @@
 ;; gorilla-repl.fileformat = 1
 
 ;; **
-;;; # Gorilla REPL
-;;; 
-;;; Welcome to gorilla :-)
-;;; 
-;;; Shift + enter evaluates code. Hit alt+g twice in quick succession or click the menu icon (upper-right corner) for more commands ...
-;;; 
-;;; It's a good habit to run each worksheet in its own namespace: feel free to use the declaration we've provided below if you'd like.
+;;; Below are solutions to most of the non-utterly-trivial programming problems posted at 4clojure.com. You can find me as user jomicoll on the website.
 ;; **
-
-;; @@
-(ns affectionate-smokescreen
-  (:require [gorilla-plot.core :as plot]))
-;; @@
-;; =>
-;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
-;; <=
 
 ;; @@
 ;;Difficulty:	Easy
 ;;Topics:	seqs
 
-(defn pen [coll] ((comp first rest reverse) coll))
+(defn pen [coll] ((comp first next reverse) coll))
 
 ;;Write a function which returns the second to last element from a sequence.
 (= (pen (list 1 2 3 4 5)) 4)
@@ -38,7 +24,7 @@
 ;;Topics:	seqs core-functions
 
 (defn nth* [coll n]
-  (if (= n 0) (first coll) (recur (rest coll) (dec n))))
+  (if (= n 0) (first coll) (recur (next coll) (dec n))))
 
 ;; Write a function which returns the Nth element from a sequence.
 (= (nth* '(4 5 6 7) 2) 6)
@@ -59,7 +45,7 @@
   (letfn [(mycount [coll cnt]
                 (if (empty? coll)
                   cnt
-                  (recur (rest coll) (inc cnt))))]
+                  (recur (next coll) (inc cnt))))]
     (mycount coll 0)))
 
 ;; Write a function which returns the total number of elements in a sequence.
@@ -156,7 +142,7 @@
                 ((fn next-fib [a b]
                    (cons a (lazy-seq (next-fib b (+ a b)))))
                  0 1))]
-    (take n (rest (fibs)))))
+    (take n (next (fibs)))))
 
 ;;Write a function which returns the first X fibonacci numbers.
 (= (fib 3) '(1 1 2))
@@ -181,7 +167,7 @@
               x
               res))
           (first coll)
-          (rest coll)))
+          (next coll)))
 
 
 (= (max* 1 8 3 4) 8)
@@ -238,7 +224,8 @@
 ;; Topics:	
 
 
-;; The some function takes a predicate function and a collection. It returns the first logical true value of (predicate x) where x is an item in the collection.
+;; The some function takes a predicate function and a collection. It returns the first logical 
+;; true value of (predicate x) where x is an item in the collection.
 
 (= 6 (some #{2 7 6} [5 6 7 8]))
 (= 6 (some #(when (even? %) %) [5 6 7 8]))
@@ -316,7 +303,8 @@
 ;; Difficulty:	Easy
 ;; Topics:	seqs core-functions
 
-;;Write a function which takes two sequences and returns the first item from each, then the second item from each, then the third, etc.
+;;Write a function which takes two sequences and returns the first item from each, then the
+;;second item from each, then the third, etc.
 
 (defn interleave* [coll1 coll2] 
   (apply concat (map list coll1 coll2)))
@@ -392,7 +380,8 @@
 
 (def sol 4)
 
-;;The contains? function checks if a KEY is present in a given collection. This often leads beginner clojurians to use it incorrectly with numerically indexed collections like vectors and lists.
+;;The contains? function checks if a KEY is present in a given collection. This often leads beginner 
+;; clojurians to use it incorrectly with numerically indexed collections like vectors and lists.
 
 
 (contains? #{4 5 6} sol)
@@ -567,7 +556,10 @@
 ;; Difficulty:	Easy
 ;; Topics:
 
-;; For any orderable data type it's possible to derive all of the basic comparison operations (<, ≤, =, ≠, ≥, and >) from a single operation (any operator but = or ≠ will work). Write a function that takes three arguments, a less than operator for the data and two items to compare. The function should return a keyword describing the relationship between the two items. The keywords for the relationship between x and y are as follows:
+;; For any orderable data type it's possible to derive all of the basic comparison operations (<, ≤, =, ≠, ≥, and >) 
+;; from a single operation (any operator but = or ≠ will work). Write a function that takes three arguments, a less 
+;; than operator for the data and two items to compare. The function should return a keyword describing the relationship 
+;; between the two items. The keywords for the relationship between x and y are as follows:
 ;; x = y → :eq
 ;; x > y → :gt
 ;l x < y → :lt
@@ -621,9 +613,14 @@
 ;; Topics:	higher-order-functions math
 
 
-;; Lexical scope and first-class functions are two of the most basic building blocks of a functional language like Clojure. When you combine the two together, you get something very powerful called lexical closures. With these, you can exercise a great deal of control over the lifetime of your local bindings, saving their values for use later, long after the code you're running now has finished.
+;; Lexical scope and first-class functions are two of the most basic building blocks of a functional language 
+;; like Clojure. When you combine the two together, you get something very powerful called lexical closures. With 
+;; these, you can exercise a great deal of control over the lifetime of your local bindings, saving their values
+;; for use later, long after the code you're running now has finished.
 
-;; It can be hard to follow in the abstract, so let's build a simple closure. Given a positive integer n, return a function (f x) which computes xn. Observe that the effect of this is to preserve the value of n for use outside the scope in which it is defined.
+;; It can be hard to follow in the abstract, so let's build a simple closure. Given a positive integer n, return a
+;; function (f x) which computes xn. Observe that the effect of this is to preserve the value of n for use outside 
+;; the scope in which it is defined.
 
 (def closure 
   (fn [n]
@@ -678,7 +675,8 @@
 ;; Topics:	core-functions
 
 
-;; Given a function f and a sequence s, write a function which returns a map. The keys should be the values of f applied to each item in s. The value at each key should be a vector of corresponding items in the order they appear in s.
+;; Given a function f and a sequence s, write a function which returns a map. The keys should be the values of f applied 
+;; to each item in s. The value at each key should be a vector of corresponding items in the order they appear in s.
 
 
 (defn group-by* [f coll]
@@ -702,7 +700,9 @@
 ;;Difficulty:	Easy
 ;;Topics:	set-theory
 
-;; Write a function which returns the symmetric difference of two sets. The symmetric difference is the set of items belonging to one but not both of the two sets.
+;; Write a function which returns the symmetric difference of two sets. The symmetric difference is the set of items 
+;; belonging to one but not both of the two sets.
+
 
 (defn sym-diff [s1 s2]
   (clojure.set/union
@@ -747,7 +747,10 @@
 ;; Topics:	higher-order-functions math
 
 
-;; Your friend Joe is always whining about Lisps using the prefix notation for math. Show him how you could easily write a function that does math using the infix notation. Is your favorite language that flexible, Joe? Write a function that accepts a variable length mathematical expression consisting of numbers and the operations +, -, *, and /. Assume a simple calculator that does not do precedence and instead just calculates left to right.
+;; Your friend Joe is always whining about Lisps using the prefix notation for math. Show him how you could easily 
+;; write a function that does math using the infix notation. Is your favorite language that flexible, Joe? Write a 
+;; function that accepts a variable length mathematical expression consisting of numbers and the operations +, -, *, 
+;; and /. Assume a simple calculator that does not do precedence and instead just calculates left to right.
 
 (defn f 
   ([x] x)
@@ -789,7 +792,8 @@
 ;; Topics:	core-seqs
 
 
-;; Map is one of the core elements of a functional programming language. Given a function f and an input sequence s, return a lazy sequence of (f x) for each element x in s.
+;; Map is one of the core elements of a functional programming language. Given a function f and an input sequence 
+;; s, return a lazy sequence of (f x) for each element x in s.
 
 (defn map* [f coll]
   (lazy-seq
@@ -815,7 +819,9 @@
 ;; Topics:	math
 
 
-;; Write a function which takes a collection of integers as an argument. Return the count of how many elements are smaller than the sum of their squared component digits. For example: 10 is larger than 1 squared plus 0 squared; whereas 15 is smaller than 1 squared plus 5 squared.
+;; Write a function which takes a collection of integers as an argument. Return the count of how many elements are 
+;; smaller than the sum of their squared component digits. For example: 10 is larger than 1 squared plus 0 squared; 
+;; whereas 15 is smaller than 1 squared plus 5 squared.
 
 (defn sum-of-squares [coll]
   (letfn [(ss 
@@ -843,7 +849,8 @@
 ;; Topics:	Destructuring
 
 
-;; Sequential destructuring allows you to bind symbols to parts of sequential things (vectors, lists, seqs, etc.): (let [bindings* ] exprs*) Complete the bindings so all let-parts evaluate to 3.
+;; Sequential destructuring allows you to bind symbols to parts of sequential things (vectors, lists, seqs, etc.): 
+;; (let [bindings* ] exprs*) Complete the bindings so all let-parts evaluate to 3.
 
 (= 3
   (let [[f xs] [+ (range 3)]] (apply f xs))
@@ -860,9 +867,13 @@
 ;; Topics:	seqs maps
 
 
-;; Because Clojure's for macro allows you to "walk" over multiple sequences in a nested fashion, it is excellent for transforming all sorts of sequences. If you don't want a sequence as your final output (say you want a map), you are often still best-off using for, because you can produce a sequence and feed it into a map, for example.
+;; Because Clojure's for macro allows you to "walk" over multiple sequences in a nested fashion, it is excellent for 
+;; transforming all sorts of sequences. If you don't want a sequence as your final output (say you want a map), you 
+;; are often still best-off using for, because you can produce a sequence and feed it into a map, for example.
 
-;; For this problem, your goal is to "flatten" a map of hashmaps. Each key in your output map should be the "path"1 that you would have to take in the original map to get to a value, so for example {1 {2 3}} should result in {[1 2] 3}. You only need to flatten one level of maps: if one of the values is a map, just leave it alone.
+;; For this problem, your goal is to "flatten" a map of hashmaps. Each key in your output map should be the "path"
+;; that you would have to take in the original map to get to a value, so for example {1 {2 3}} should result in {[1 2] 3}. 
+;; You only need to flatten one level of maps: if one of the values is a map, just leave it alone.
 
 ;;1 That is, (get-in original [k1 k2]) should be the same as (get result [k1 k2])
 
@@ -898,7 +909,9 @@
 ;; Topics:	parsing
 
 
-;; When parsing a snippet of code it's often a good idea to do a sanity check to see if all the brackets match up. Write a function that takes in a string and returns truthy if all square [ ] round ( ) and curly { } brackets are properly paired and legally nested, or returns falsey otherwise.
+;; When parsing a snippet of code it's often a good idea to do a sanity check to see if all the brackets match up. Write a 
+;; function that takes in a string and returns truthy if all square [ ] round ( ) and curly { } brackets are properly 
+;; paired and legally nested, or returns falsey otherwise.
 
 (defn balanced? [s]
   (let [cleaned (filter #{\[ \] \( \) \{ \}} s)
@@ -945,7 +958,8 @@
 ;; Topics:	partial-functions
 
 
-;; Write a function that accepts a curried function of unknown arity n. Return an equivalent function of n arguments. 
+;; Write a function that accepts a curried function of unknown arity n. Return an equivalent 
+;; function of n arguments. 
 
 
 (defn decurry [curried-fn]
@@ -1061,7 +1075,9 @@
 ;; Topics:	seqs
 
 
-;; Write a function which takes a sequence consisting of items with different types and splits them up into a set of homogeneous sub-sequences. The internal order of each sub-sequence should be maintained, but the sub-sequences themselves can be returned in any order (this is why 'set' is used in the test cases).
+;; Write a function which takes a sequence consisting of items with different types and splits them up into a 
+;; set of homogeneous sub-sequences. The internal order of each sub-sequence should be maintained, but the
+;; sub-sequences themselves can be returned in any order (this is why 'set' is used in the test cases).
 
 (defn split-by-type [coll] (vals (group-by type coll)))
 
@@ -1081,9 +1097,12 @@
 ;; Topics:	seqs
 
 
-;; Write a function that returns a lazy sequence of "pronunciations" of a sequence of numbers. A pronunciation of each element in the sequence consists of the number of repeating identical numbers and the number itself. For example, [1 1] is pronounced as [2 1] ("two ones"), which in turn is pronounced as [1 2 1 1] ("one two, one one").
+;; Write a function that returns a lazy sequence of "pronunciations" of a sequence of numbers. A pronunciation of 
+;; each element in the sequence consists of the number of repeating identical numbers and the number itself. For
+;; example, [1 1] is pronounced as [2 1] ("two ones"), which in turn is pronounced as [1 2 1 1] ("one two, one one").
 
-;; Your function should accept an initial sequence of numbers, and return an infinite lazy sequence of pronunciations, each element being a pronunciation of the previous element.
+;; Your function should accept an initial sequence of numbers, and return an infinite lazy sequence of pronunciations, 
+;; each element being a pronunciation of the previous element.
 
 (defn pronounce [coll]
   (letfn [(gen-next
@@ -1113,7 +1132,8 @@
 ;; Topics:	seqs
 
 
-;; Write a function which flattens any nested combination of sequential things (lists, vectors, etc.), but maintains the lowest level sequential items. The result should be a sequence of sequences with only one level of nesting.
+;; Write a function which flattens any nested combination of sequential things (lists, vectors, etc.), but maintains 
+;; the lowest level sequential items. The result should be a sequence of sequences with only one level of nesting.
 
 (defn almost-flatten [coll]
   (lazy-seq
@@ -1140,7 +1160,9 @@
 ;; Topics:	seqs
 
 
-;; Create a function which takes an integer and a nested collection of integers as arguments. Analyze the elements of the input collection and return a sequence which maintains the nested structure, and which includes all elements starting from the head whose sum is less than or equal to the input integer.
+;; Create a function which takes an integer and a nested collection of integers as arguments. Analyze the elements of the 
+;; input collection and return a sequence which maintains the nested structure, and which includes all elements starting 
+;; from the head whose sum is less than or equal to the input integer.
 
 ;; Sadly seeems to be horrendously dificult to preserve 
 ;; arbitrarily nested collection types.
@@ -1206,7 +1228,9 @@
 ;; Topics:	seqs combinatorics
 
 
-;; Given a sequence S consisting of n elements generate all k-combinations of S, i. e. generate all possible sets consisting of k distinct elements taken from S. The number of k-combinations for a sequence is equal to the binomial coefficient.
+;; Given a sequence S consisting of n elements generate all k-combinations of S, i. e. generate all possible sets 
+;; consisting of k distinct elements taken from S. The number of k-combinations for a sequence is equal to the binomial 
+;; coefficient.
 
 (defn combinations
   [k coll]
@@ -1305,7 +1329,8 @@
 ;; Topics:	seqs core-functions
 
 
-;; Write a function which returns a sequence of lists of x items each. Lists of less than x items should not be returned.
+;; Write a function which returns a sequence of lists of x items each. Lists of less than x items should not be 
+;; returned.
 
 (defn partition* [n coll]
   (let [section (take n coll)]
@@ -1328,7 +1353,8 @@
 ;; Topics:	seqs core-functions
 
 
-;; Write a function which behaves like reduce, but returns each intermediate value of the reduction. Your function must accept either two or three arguments, and the return sequence must be lazy.
+;; Write a function which behaves like reduce, but returns each intermediate value of the reduction. Your function must
+;; accept either two or three arguments, and the return sequence must be lazy.
 
 (defn reductions*
   ([f coll] (reductions* f (first coll) (rest coll)))
@@ -1355,7 +1381,8 @@
 ;; Topics:	seqs core-functions
 
 
-;; Write a function that takes a two-argument predicate, a value, and a collection; and returns a new collection where the value is inserted between every two items that satisfy the predicate.
+;; Write a function that takes a two-argument predicate, a value, and a collection; and returns a new collection where the 
+;; value is inserted between every two items that satisfy the predicate.
 
 (defn insert-between [pred x coll]
   (mapcat (fn [[a b :as xs]]
@@ -1391,9 +1418,11 @@
 ;; Topics:	seqs higher-order-functions
 
 
-;; take-while is great for filtering sequences, but it limited: you can only examine a single item of the sequence at a time. What if you need to keep track of some state as you go over the sequence?
+;; take-while is great for filtering sequences, but it limited: you can only examine a single item of the sequence at a time. What if 
+;; you need to keep track of some state as you go over the sequence?
 
-;; Write a function which accepts an integer n, a predicate p, and a sequence. It should return a lazy sequence of items in the list up to, but not including, the nth item that satisfies the predicate.
+;; Write a function which accepts an integer n, a predicate p, and a sequence. It should return a lazy sequence of items in the list 
+;; up to, but not including, the nth item that satisfies the predicate.
 
 (defn global-take-while 
   [n pred coll]
@@ -1428,7 +1457,8 @@
 ;; Topics:	
 
 
-;; A function f defined on a domain D induces an equivalence relation on D, as follows: a is equivalent to b with respect to f if and only if (f a) is equal to (f b). Write a function with arguments f and D that computes the equivalence classes of D with respect to f.
+;; A function f defined on a domain D induces an equivalence relation on D, as follows: a is equivalent to b with respect to f if and only 
+;; if (f a) is equal to (f b). Write a function with arguments f and D that computes the equivalence classes of D with respect to f.
 
 (def eq-classes (comp set #(map set %) vals group-by))
 
@@ -1465,7 +1495,8 @@
 ;; Topics:	set-theory
 
 
-;; Write a function which generates the power set of a given set. The power set of a set x is the set of all subsets of x, including the empty set and x itself.
+;; Write a function which generates the power set of a given set. The power set of a set x is the set of all subsets of x, including the empty 
+;; set and x itself.
 
 (defn power-set [coll]
   (let [n (count coll)
@@ -1503,7 +1534,8 @@
 ;; Topics:	sorting
 
 
-;; Write a function that splits a sentence up into a sorted list of words. Capitalization should not affect sort order and punctuation should be ignored.
+;; Write a function that splits a sentence up into a sorted list of words. Capitalization should not affect sort order and punctuation 
+;; should be ignored.
 
 (defn word-sorting [s]
   (sort-by (fn [s] (clojure.string/lower-case s))
@@ -1530,7 +1562,8 @@
 ;; Topics:	strings
 
 
-;; When working with java, you often need to create an object with fieldsLikeThis, but you'd rather work with a hashmap that has :keys-like-this until it's time to convert. Write a function which takes lower-case hyphen-separated strings and converts them to camel-case strings.
+;; When working with java, you often need to create an object with fieldsLikeThis, but you'd rather work with a hashmap that has :keys-like-this 
+;; until it's time to convert. Write a function which takes lower-case hyphen-separated strings and converts them to camel-case strings.
 
 (defn to-camel [s]
   (loop [ret []
@@ -1566,7 +1599,8 @@
 ;; Topics:	strings math
 
 
-;; This is the inverse of Problem 92, but much easier. Given an integer smaller than 4000, return the corresponding roman numeral in uppercase, adhering to the subtractive principle.
+;; This is the inverse of Problem 92, but much easier. Given an integer smaller than 4000, return the corresponding roman numeral 
+;; in uppercase, adhering to the subtractive principle.
 
 (defn roman-numeral [n]
   (let [table [1000 \M 500 \D 100 \C 50 \L 10 \X 5 \V 1 \I]]
@@ -1612,7 +1646,8 @@
 ;; Difficulty:	Medium
 ;; Topics:	sequences
 
-;; Write an oscillating iterate: a function that takes an initial value and a variable number of functions. It should return a lazy sequence of the functions applied to the value in order, restarting from the first function after it hits the end.
+;; Write an oscillating iterate: a function that takes an initial value and a variable number of functions. It should return a 
+;; lazy sequence of the functions applied to the value in order, restarting from the first function after it hits the end.
 
 (defn oscilrate [init & fs]
   (letfn [(step
@@ -1645,26 +1680,13 @@
 ;; <=
 
 ;; @@
-(sort #{-1 1 99})
-;; @@
-;; =>
-;;; {"type":"list-like","open":"<span class='clj-list'>(</span>","close":"<span class='clj-list'>)</span>","separator":" ","items":[{"type":"html","content":"<span class='clj-long'>-1</span>","value":"-1"},{"type":"html","content":"<span class='clj-long'>1</span>","value":"1"},{"type":"html","content":"<span class='clj-long'>99</span>","value":"99"}],"value":"(-1 1 99)"}
-;; <=
-
-;; @@
-(apply = (list 1 1 1))
-;; @@
-;; =>
-;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
-;; <=
-
-;; @@
 ;;Sum Some Set Subsets
 ;;Difficulty:	Medium
 ;;Topics:	math
 
 
-;;Given a variable number of sets of integers, create a function which returns true iff all of the sets have a non-empty subset with an equivalent summation.
+;;Given a variable number of sets of integers, create a function which returns true iff all of the sets have a non-empty 
+;;subset with an equivalent summation.
 
 (defn subset-sum [& colls]
   (let [vecs (mapv vec colls)
@@ -1720,7 +1742,8 @@
 ;; Topics:	math
 
 
-;; Write a function which calculates the sum of all natural numbers under n (first argument) which are evenly divisible by at least one of a and b (second and third argument). Numbers a and b are guaranteed to be coprimes.
+;; Write a function which calculates the sum of all natural numbers under n (first argument) which are evenly divisible 
+;; by at least one of a and b (second and third argument). Numbers a and b are guaranteed to be coprimes.
 
 ;; Note: Some test cases have a very large n, so the most obvious solution will exceed the time limit.
 
@@ -1762,7 +1785,8 @@
 ;; Topics:	math
 
 
-;; A balanced prime is a prime number which is also the mean of the primes directly before and after it in the sequence of valid primes. Create a function which takes an integer n, and returns true iff it is a balanced prime.
+;; A balanced prime is a prime number which is also the mean of the primes directly before and after it in the sequence 
+;; of valid primes. Create a function which takes an integer n, and returns true iff it is a balanced prime.
 
 ;; My horrible solution.
 (defn prime-sandwich? [n]
@@ -1835,7 +1859,9 @@
 ;; Topics:	math
 
 
-;; Write a function which returns a sequence of digits of a non-negative number (first argument) in numerical system with an arbitrary base (second argument). Digits should be represented with their integer values, e.g. 15 would be [1 5] in base 10, [1 1 1 1] in base 2 and [15] in base 16. 
+;; Write a function which returns a sequence of digits of a non-negative number (first argument) in numerical system with an 
+;; arbitrary base (second argument). Digits should be represented with their integer values, e.g. 15 would be [1 5] in base 
+;; 10, [1 1 1 1] in base 2 and [15] in base 16. 
 
 (defn convert [n base]
   (if (< n base)
@@ -1863,7 +1889,8 @@
 ;; Topics:	math
 
 
-;; A balanced number is one whose component digits have the same sum on the left and right halves of the number. Write a function which accepts an integer n, and returns true iff n is balanced.
+;; A balanced number is one whose component digits have the same sum on the left and right halves of the number. Write a function 
+;; which accepts an integer n, and returns true iff n is balanced.
 
 (defn balance-of-n [n]
   (let [s (str n)
@@ -1903,7 +1930,10 @@
 ;; Topics:	math
 
 
-;; Happy numbers are positive integers that follow a particular formula: take each individual digit, square it, and then sum the squares to get a new number. Repeat with the new number and eventually, you might get to a number whose squared sum is 1. This is a happy number. An unhappy number (or sad number) is one that loops endlessly. Write a function that determines if a number is happy or not.
+;; Happy numbers are positive integers that follow a particular formula: take each individual digit, square it, and 
+;; then sum the squares to get a new number. Repeat with the new number and eventually, you might get to a number whose 
+;; squared sum is 1. This is a happy number. An unhappy number (or sad number) is one that loops endlessly. Write a 
+;; function that determines if a number is happy or not.
 
 (defn happy-numbers [n]
   (let [m {\0 0 \1 1 \2 2 \3 3 \4 4 \5 5 \6 6 \7 7 \8 8 \9 9}
@@ -1938,7 +1968,8 @@
 ;; Topics:	maps seqs
 
 
-;; Given an input sequence of keywords and numbers, create a map such that each key in the map is a keyword, and the value is a sequence of all the numbers (if any) between it and the next keyword in the sequence.
+;; Given an input sequence of keywords and numbers, create a map such that each key in the map is a keyword, and the value 
+;; is a sequence of all the numbers (if any) between it and the next keyword in the sequence.
 
 
 (defn id-kvs [coll]
@@ -1970,7 +2001,8 @@
 ;; Topics:	higher-order-functions core-functions
 
 
-;; Take a set of functions and return a new function that takes a variable number of arguments and returns a sequence containing the result of applying each function left-to-right to the argument list.
+;; Take a set of functions and return a new function that takes a variable number of arguments and returns a sequence 
+;; containing the result of applying each function left-to-right to the argument list.
 
 (defn juxt* [& fs]
   (fn [& args]
@@ -1992,7 +2024,8 @@
 ;; Topics:	higher-order-functions core-functions
 
 
-;; Write a function which allows you to create function compositions. The parameter list should take a variable number of functions, and create a function that applies them from right-to-left.
+;; Write a function which allows you to create function compositions. The parameter list should take a variable number 
+;; of functions, and create a function that applies them from right-to-left.
 
 
 (defn comp* [& fns]
@@ -2045,9 +2078,17 @@
 ;; Topics:	game cards
 
 
-;; In trick-taking card games such as bridge, spades, or hearts, cards are played in groups known as "tricks" - each player plays a single card, in order; the first player is said to "lead" to the trick. After all players have played, one card is said to have "won" the trick. How the winner is determined will vary by game, but generally the winner is the highest card played in the suit that was led. Sometimes (again varying by game), a particular suit will be designated "trump", meaning that its cards are more powerful than any others: if there is a trump suit, and any trumps are played, then the highest trump wins regardless of what was led.
+;; In trick-taking card games such as bridge, spades, or hearts, cards are played in groups known as "tricks" - each player 
+;; plays a single card, in order; the first player is said to "lead" to the trick. After all players have played, one card 
+;; is said to have "won" the trick. How the winner is determined will vary by game, but generally the winner is the highest
+;; card played in the suit that was led. Sometimes (again varying by game), a particular suit will be designated "trump", 
+;; meaning that its cards are more powerful than any others: if there is a trump suit, and any trumps are played, then the 
+;; highest trump wins regardless of what was led.
 
-;;Your goal is to devise a function that can determine which of a number of cards has won a trick. You should accept a trump suit, and return a function winner. Winner will be called on a sequence of cards, and should return the one which wins the trick. Cards will be represented in the format returned by Problem 128, Recognize Playing Cards: a hash-map of :suit and a numeric :rank. Cards with a larger rank are stronger.
+;;Your goal is to devise a function that can determine which of a number of cards has won a trick. You should accept a trump 
+;;suit, and return a function winner. Winner will be called on a sequence of cards, and should return the one which wins the 
+;;trick. Cards will be represented in the format returned by Problem 128, Recognize Playing Cards: a hash-map of :suit and a 
+;;numeric :rank. Cards with a larger rank are stronger.
 
 
 (defn winner [trump]
@@ -2095,7 +2136,9 @@
 ;; Topics:	functions
 
 
-;; Given a mathematical formula in prefix notation, return a function that calculates the value of the formula. The formula can contain nested calculations using the four basic mathematical operators, numeric constants, and symbols representing variables. The returned function has to accept a single parameter containing the map of variable names to their values. 
+;; Given a mathematical formula in prefix notation, return a function that calculates the value of the formula. The formula can 
+;; contain nested calculations using the four basic mathematical operators, numeric constants, and symbols representing variables.
+;; The returned function has to accept a single parameter containing the map of variable names to their values. 
 
 (defn universal-compute [form]
   (fn [m]
@@ -2171,7 +2214,10 @@
 ;; Topics:	core-functions
 
 
-;; Write a function which takes a function f and a variable number of maps. Your function should return a map that consists of the rest of the maps conj-ed onto the first. If a key occurs in more than one map, the mapping(s) from the latter (left-to-right) should be combined with the mapping in the result by calling (f val-in-result val-in-latter)
+;; Write a function which takes a function f and a variable number of maps. Your function should return 
+;; a map that consists of the rest of the maps conj-ed onto the first. If a key occurs in more than one
+;; map, the mapping(s) from the latter (left-to-right) should be combined with the mapping in the result 
+;; by calling (f val-in-result val-in-latter)
 
 
 (defn merge-with* [f & ms]
@@ -2207,7 +2253,9 @@
 ;; Topics:	
 
 
-;; Write a function that takes a sequence of integers and returns a sequence of "intervals". Each interval is a a vector of two integers, start and end, such that all integers between start and end (inclusive) are contained in the input sequence.
+;; Write a function that takes a sequence of integers and returns a sequence of "intervals". Each interval is 
+;; a a vector of two integers, start and end, such that all integers between start and end (inclusive) are 
+;; contained in the input sequence.
 
 (defn intervals [coll]
   (let [sorted (sort coll)
@@ -2252,7 +2300,9 @@
 ;; Topics:	
 
 
-;; Two numbers are coprime if their greatest common divisor equals 1. Euler's totient function f(x) is defined as the number of positive integers less than x which are coprime to x. The special case f(1) equals 1. Write a function which calculates Euler's totient function.
+;; Two numbers are coprime if their greatest common divisor equals 1. Euler's totient function f(x) is defined as the 
+;; number of positive integers less than x which are coprime to x. The special case f(1) equals 1. Write a function 
+;; which calculates Euler's totient function.
 
 (defn totient  [x]
   (letfn [(gcd [x y] (if (zero? y) x (recur y (mod x y))))]
@@ -2277,7 +2327,8 @@
 ;; Topics:	
 
 
-;; A number is "perfect" if the sum of its divisors equal the number itself. 6 is a perfect number because 1+2+3=6. Write a function which returns true for perfect numbers and false otherwise.
+;; A number is "perfect" if the sum of its divisors equal the number itself. 6 is a perfect number because 1+2+3=6. 
+;; Write a function which returns true for perfect numbers and false otherwise.
 
 (defn perfect-numbers [n]
   (letfn [(divisors [n] (filter #(zero? (mod n %)) (range 1  n)))]
@@ -2303,7 +2354,10 @@
 ;; Topics:	
 
 
-;; Write a function which finds all the anagrams in a vector of words. A word x is an anagram of word y if all the letters in x can be rearranged in a different order to form y. Your function should return a set of sets, where each sub-set is a group of words which are anagrams of each other. Each sub-set should have at least two words. Words without any anagrams should not be included in the result.
+;; Write a function which finds all the anagrams in a vector of words. A word x is an anagram of word y 
+;; if all the letters in x can be rearranged in a different order to form y. Your function should return a 
+;; set of sets, where each sub-set is a group of words which are anagrams of each other. Each sub-set should 
+;; have at least two words. Words without any anagrams should not be included in the result.
 
 ;; original solution.
 #_(defn anagram-finder [words]
@@ -2355,7 +2409,8 @@
 ;; Topics:	
 
 
-;; Given a string of comma separated integers, write a function which returns a new comma separated string that only contains the numbers which are perfect squares.
+;; Given a string of comma separated integers, write a function which returns a new comma 
+;; separated string that only contains the numbers which are perfect squares.
 
 
 (defn perfect-squares [s]
@@ -2389,8 +2444,8 @@
 
 
 ;;A palindromic number is a number that is the same when written forwards or backwards (e.g., 3, 99, 14341).
-
-;; Write a function which takes an integer n, as its only argument, and returns an increasing lazy sequence of all palindromic numbers that are not less than n.
+;; Write a function which takes an integer n, as its only argument, and returns an increasing lazy sequence of 
+;; all palindromic numbers that are not less than n.
 
 ;; The most simple solution will exceed the time limit!
 
@@ -2495,15 +2550,23 @@
 ;;Topics:	seqs recursion math
 
 
-;;In what follows, m, n, s, t denote nonnegative integers, f denotes a function that accepts two arguments and is defined for all nonnegative integers in both arguments.
+;;In what follows, m, n, s, t denote nonnegative integers, f denotes a function that accepts two arguments 
+;; and is defined for all nonnegative integers in both arguments.
 
-;;In mathematics, the function f can be interpreted as an infinite matrix with infinitely many rows and columns that, when written, looks like an ordinary matrix but its rows and columns cannot be written down completely, so are terminated with ellipses. In Clojure, such infinite matrix can be represented as an infinite lazy sequence of infinite lazy sequences, where the inner sequences represent rows.
+;;In mathematics, the function f can be interpreted as an infinite matrix with infinitely many rows and 
+;;columns that, when written, looks like an ordinary matrix but its rows and columns cannot be written 
+;;down completely, so are terminated with ellipses. In Clojure, such infinite matrix can be represented 
+;;as an infinite lazy sequence of infinite lazy sequences, where the inner sequences represent rows.
 
 ;;Write a function that accepts 1, 3 and 5 arguments
 
-;; - with the argument f, it returns the infinite matrix A that has the entry in the i-th row and the j-th column equal to f(i,j) for i,j = 0,1,2,...;
-;; - with the arguments f, m, n, it returns the infinite matrix B that equals the remainder of the matrix A after the removal of the first m rows and the first n columns;
-;; - with the arguments f, m, n, s, t, it returns the finite s-by-t matrix that consists of the first t entries of each of the first s rows of the matrix B or, equivalently, that consists of the first s entries of each of the first t columns of the matrix B.
+;; - with the argument f, it returns the infinite matrix A that has the entry in the i-th row and
+;;   the j-th column equal to f(i,j) for i,j = 0,1,2,...;
+;; - with the arguments f, m, n, it returns the infinite matrix B that equals the remainder of 
+;;   the matrix A after the removal of the first m rows and the first n columns;
+;; - with the arguments f, m, n, s, t, it returns the finite s-by-t matrix that consists of the first t 
+;;   entries of each of the first s rows of the matrix B or, equivalently, that consists of the first s 
+;;   entries of each of the first t columns of the matrix B.
 
 
 (defn infinite-matrix 
@@ -2582,10 +2645,14 @@
 ;; Topics:	seqs testing
 
 
-;; Clojure has many sequence types, which act in subtly different ways. The core functions typically convert them into a uniform "sequence" type and work with them that way, but it can be important to understand the behavioral and performance differences so that you know which kind is appropriate for your application.
+;; Clojure has many sequence types, which act in subtly different ways. The core functions typically convert them into a 
+;; uniform "sequence" type and work with them that way, but it can be important to understand the behavioral and performance 
+;; differences so that you know which kind is appropriate for your application.
 
-;; Write a function which takes a collection and returns one of :map, :set, :list, or :vector - describing the type of collection it was given.
-;; You won't be allowed to inspect their class or use the built-in predicates like list? - the point is to poke at them and understand their behavior.
+;; Write a function which takes a collection and returns one of :map, :set, :list, or :vector - describing the type of 
+;; collection it was given.
+;; You won't be allowed to inspect their class or use the built-in predicates like list? - the point is to poke at them 
+;; and understand their behavior.
 
 ;; weirdest problem ever?
 (defn bbt [coll]
@@ -2621,11 +2688,16 @@
 ;; Topics:	math combinatorics
 
 
-;; In a family of languages like Lisp, having balanced parentheses is a defining feature of the language. Luckily, Lisp has almost no syntax, except for these "delimiters" -- and that hardly qualifies as "syntax", at least in any useful computer programming sense.
+;; In a family of languages like Lisp, having balanced parentheses is a defining feature of the language. 
+;; Luckily, Lisp has almost no syntax, except for these "delimiters" -- and that hardly qualifies as "syntax", 
+;; at least in any useful computer programming sense.
 
-;; It is not a difficult exercise to find all the combinations of well-formed parentheses if we only have N pairs to work with. For instance, if we only have 2 pairs, we only have two possible combinations: "()()" and "(())". Any other combination of length 4 is ill-formed. Can you see why?
+;; It is not a difficult exercise to find all the combinations of well-formed parentheses if we only have N pairs 
+;; to work with. For instance, if we only have 2 pairs, we only have two possible combinations: "()()" and "(())".
+;; Any other combination of length 4 is ill-formed. Can you see why?
 
-;; Generate all possible combinations of well-formed parentheses of length 2n (n pairs of parentheses). For this problem, we only consider '(' and ')', but the answer is similar if you work with only {} or only [].
+;; Generate all possible combinations of well-formed parentheses of length 2n (n pairs of parentheses). For this problem,
+;; we only consider '(' and ')', but the answer is similar if you work with only {} or only [].
 
 ;;There is an interesting pattern in the numbers!
 
@@ -2664,7 +2736,8 @@
 ;; Topics:	seqs
 
 
-;; Given a vector of integers, find the longest consecutive sub-sequence of increasing numbers. If two sub-sequences have the same length, use the one that occurs first. An increasing sub-sequence must have a length of 2 or greater to qualify.
+;; Given a vector of integers, find the longest consecutive sub-sequence of increasing numbers. If two sub-sequences have the 
+;; same length, use the one that occurs first. An increasing sub-sequence must have a length of 2 or greater to qualify.
 
 (defn lis [coll]
   (letfn [(rf [[current longest] e]
@@ -2695,7 +2768,9 @@
 ;; Topics:	game
 
 
-;; A tic-tac-toe board is represented by a two dimensional vector. X is represented by :x, O is represented by :o, and empty is represented by :e. A player wins by placing three Xs or three Os in a horizontal, vertical, or diagonal row. Write a function which analyzes a tic-tac-toe board and returns :x if X has won, :o if O has won, and nil if neither player has won.
+;; A tic-tac-toe board is represented by a two dimensional vector. X is represented by :x, O is represented by :o, and empty 
+;; is represented by :e. A player wins by placing three Xs or three Os in a horizontal, vertical, or diagonal row. Write a 
+;; function which analyzes a tic-tac-toe board and returns :x if X has won, :o if O has won, and nil if neither player has won.
 
 (defn solve [board]
   (letfn [(transpose [matrix]
@@ -2764,9 +2839,11 @@
 ;; Topics:	strings math
 
 
-;; Roman numerals are easy to recognize, but not everyone knows all the rules necessary to work with them. Write a function to parse a Roman-numeral string and return the number it represents. 
+;; Roman numerals are easy to recognize, but not everyone knows all the rules necessary to work with them. Write a function to 
+;; parse a Roman-numeral string and return the number it represents. 
 
-;; You can assume that the input will be well-formed, in upper-case, and follow the subtractive principle. You don't need to handle any numbers greater than MMMCMXCIX (3999), the largest number representable with ordinary letters.
+;; You can assume that the input will be well-formed, in upper-case, and follow the subtractive principle. You don't need to
+;; handle any numbers greater than MMMCMXCIX (3999), the largest number representable with ordinary letters.
 
 (defn roman-numeral [s]
   (let [table {\I 1 \V 5
@@ -2806,7 +2883,9 @@
 ;; Topics:	graph-theory
 
 
-;; Write a function which calculates the sum of the minimal path through a triangle. The triangle is represented as a collection of vectors. The path should start at the top of the triangle and move to an adjacent number on the next row until the bottom of the triangle is reached.
+;; Write a function which calculates the sum of the minimal path through a triangle. The triangle is represented as a 
+;; collection of vectors. The path should start at the top of the triangle and move to an adjacent number on the next 
+;; row until the bottom of the triangle is reached.
 
 (defn min-path [triangle]
   (letfn [(walk 
@@ -2839,7 +2918,8 @@
 ;; Topics:	set-theory
 
 
-;; Write a function which generates the transitive closure of a binary relation. The relation will be represented as a set of 2 item vectors.
+;; Write a function which generates the transitive closure of a binary relation. The relation will be represented 
+;; as a set of 2 item vectors.
 
 (defn transitive-closure [rel]
   (let [nxt (into #{}
@@ -2876,11 +2956,14 @@
 ;; Topics:	seqs
 
 
-;; A word chain consists of a set of words ordered so that each word differs by only one letter from the words directly before and after it. The one letter difference can be either an insertion, a deletion, or a substitution. Here is an example word chain:
+;; A word chain consists of a set of words ordered so that each word differs by only one letter from the words directly 
+;; before and after it. The one letter difference can be either an insertion, a deletion, or a substitution. Here is an 
+;; example word chain:
 
 ;; cat -> cot -> coat -> oat -> hat -> hot -> hog -> dog
 
-;; Write a function which takes a sequence of words, and returns true if they can be arranged into one continous word chain, and false if they cannot.
+;; Write a function which takes a sequence of words, and returns true if they can be arranged into one continous word 
+;; chain, and false if they cannot.
 
 (defn word-chain? [words]
   (letfn [(adjacent?
@@ -2950,11 +3033,13 @@
 ;; Topics:	graph-theory
 
 
-;; Given a graph, determine whether the graph is connected. A connected graph is such that a path exists between any two given nodes.
+;; Given a graph, determine whether the graph is connected. A connected graph is such that a path exists 
+;; between any two given nodes.
 
 ;; -Your function must return true if the graph is connected and false otherwise.
 
-;; -You will be given a set of tuples representing the edges of a graph. Each member of a tuple being a vertex/node in the graph.
+;; -You will be given a set of tuples representing the edges of a graph. Each member of a tuple being a 
+;; vertex/node in the graph.
 
 ;; -Each edge is undirected (can be traversed either direction). 
 
@@ -3008,7 +3093,8 @@
 
 ;; The game of life is a cellular automaton devised by mathematician John Conway. 
 
-;; The 'board' consists of both live (#) and dead ( ) cells. Each cell interacts with its eight neighbours (horizontal, vertical, diagonal), and its next state is dependent on the following rules:
+;; The 'board' consists of both live (#) and dead ( ) cells. Each cell interacts with its eight neighbours 
+;; (horizontal, vertical, diagonal), and its next state is dependent on the following rules:
 
 ;; 1) Any live cell with fewer than two live neighbours dies, as if caused by under-population.
 ;; 2) Any live cell with two or three live neighbours lives on to the next generation.
@@ -3112,7 +3198,8 @@
 ;; halve (odd numbers cannot be halved)
 ;; add 2
 
-;; Find the shortest path through the "maze". Because there are multiple shortest paths, you must return the length of the shortest path, not the path itself.
+;; Find the shortest path through the "maze". Because there are multiple shortest paths, you must return the length 
+;; of the shortest path, not the path itself.
 
 (defn number-maze [x y]
   (letfn [(walk [n ret depth]
@@ -3160,7 +3247,8 @@
 ;; Topics:	seqs
 
 
-;; Given two sequences x and y, calculate the Levenshtein distance of x and y, i. e. the minimum number of edits needed to transform x into y. The allowed edits are:
+;; Given two sequences x and y, calculate the Levenshtein distance of x and y, i. e. the minimum number of edits
+;; needed to transform x into y. The allowed edits are:
 
 ;; - insert a single item
 ;; - delete a single item
@@ -3212,7 +3300,8 @@
 ;; Topics:	graph-theory
 
 
-;; Starting with a graph you must write a function that returns true if it is possible to make a tour of the graph in which every edge is visited exactly once.
+;; Starting with a graph you must write a function that returns true if it is possible to make a tour of 
+;; the graph in which every edge is visited exactly once.
 
 ;; The graph is represented by a vector of tuples, where each tuple represents a single edge.
 
@@ -3270,7 +3359,10 @@
 ;; Topics:	game
 
 
-;; As in Problem 73, a tic-tac-toe board is represented by a two dimensional vector. X is represented by :x, O is represented by :o, and empty is represented by :e. Create a function that accepts a game piece and board as arguments, and returns a set (possibly empty) of all valid board placements of the game piece which would result in an immediate win.
+;; As in Problem 73, a tic-tac-toe board is represented by a two dimensional vector. X is represented by 
+;; :x, O is represented by :o, and empty is represented by :e. Create a function that accepts a game piece 
+;; and board as arguments, and returns a set (possibly empty) of all valid board placements of the game piece 
+;; which would result in an immediate win.
 
 ;; Board coordinates should be as in calls to get-in. For example, [0 1] is the topmost row, center position.
 
@@ -3345,13 +3437,17 @@
 ;; Topics:	game
 
 
-;; A mad scientist with tenure has created an experiment tracking mice in a maze. Several mazes have been randomly generated, and you've been tasked with writing a program to determine the mazes in which it's possible for the mouse to reach the cheesy endpoint. Write a function which accepts a maze in the form of a collection of rows, each row is a string where:
+;; A mad scientist with tenure has created an experiment tracking mice in a maze. Several mazes have been 
+;; randomly generated, and you've been tasked with writing a program to determine the mazes in which it's 
+;; possible for the mouse to reach the cheesy endpoint. Write a function which accepts a maze in the form 
+;; of a collection of rows, each row is a string where:
 ;; -spaces represent areas where the mouse can walk freely
 ;; -hashes (#) represent walls where the mouse can not walk
 ;; -M represents the mouse's starting point
 ;; -C represents the cheese which the mouse must reach
 
-;; The mouse is not allowed to travel diagonally in the maze (only up/down/left/right), nor can he escape the edge of the maze. Your function must return true iff the maze is solvable by the mouse.
+;; The mouse is not allowed to travel diagonally in the maze (only up/down/left/right), nor can he escape 
+;; the edge of the maze. Your function must return true iff the maze is solvable by the mouse.
 
 (defn for-science! [maze-data]
   (letfn [(build-maze 
@@ -3476,7 +3572,9 @@
 ;; Topics:	types
 
 
-;; Write a function that takes a variable number of integer arguments. If the output is coerced into a string, it should return a comma (and space) separated list of the inputs sorted smallest to largest. If the output is coerced into a sequence, it should return a seq of unique input elements in the same order as they were entered.
+;; Write a function that takes a variable number of integer arguments. If the output is coerced into a string, it should return a 
+;; comma (and space) separated list of the inputs sorted smallest to largest. If the output is coerced into a sequence, it should 
+;; return a seq of unique input elements in the same order as they were entered.
 
 ;; don't understand the question...
 (defn dance! [& coll]
@@ -3511,9 +3609,12 @@
 ;; Topics:	game
 
 
-;; Write a function that takes a string and a partially-filled crossword puzzle board, and determines if the input string can be legally placed onto the board. 
+;; Write a function that takes a string and a partially-filled crossword puzzle board, and determines if the input string 
+;; can be legally placed onto the board. 
 
-;; The crossword puzzle board consists of a collection of partially-filled rows. Empty spaces are denoted with an underscore (_), unusable spaces are denoted with a hash symbol (#), and pre-filled spaces have a character in place; the whitespace characters are for legibility and should be ignored. 
+;; The crossword puzzle board consists of a collection of partially-filled rows. Empty spaces are denoted with an underscore 
+;; (_), unusable spaces are denoted with a hash symbol (#), and pre-filled spaces have a character in place; the whitespace 
+;; characters are for legibility and should be ignored. 
 
 ;; For a word to be legally placed on the board: 
 ;; - It may use empty spaces (underscores) 
@@ -3571,14 +3672,12 @@
 
 ;; Create a function of no arguments which returns a string that is an exact copy of the function itself. 
 
-;; Hint: read this if you get stuck (this question is harder than it first appears); but it's worth the effort to solve it independently if you can! 
+;; Hint: read this if you get stuck (this question is harder than it first appears); but it's worth the 
+;; effort to solve it independently if you can! 
 
 ;; Fun fact: Gus is the name of the 4Clojure dragon.
 
-(fn [] ((fn [x] (str (list (quote fn) [] 
-                           (list x (list (quote quote) x))))) 
-        (quote (fn [x]  (str (list (quote fn) [] 
-                                   (list x (list (quote quote) x))))))))
+(fn [] ((fn [x] (str (list (quote fn) [] (list x (list (quote quote) x))))) (quote (fn [x]  (str (list (quote fn) [] (list x (list (quote quote) x))))))))
 
 
 
@@ -3602,7 +3701,8 @@
 ;; Topics:	strings game
 
 
-;; Following on from Recognize Playing Cards, determine the best poker hand that can be made with five cards. The hand rankings are listed below for your convenience.
+;; Following on from Recognize Playing Cards, determine the best poker hand that can be made with five cards. 
+;; The hand rankings are listed below for your convenience.
 
 ;; Straight flush: All cards in the same suit, and in sequence
 ;; Four of a kind: Four of the cards have the same rank
@@ -3776,7 +3876,10 @@
 ;; Topics:	game
 
 
-;; Reversi is normally played on an 8 by 8 board. In this problem, a 4 by 4 board is represented as a two-dimensional vector with black, white, and empty pieces represented by 'b, 'w, and 'e, respectively. Create a function that accepts a game board and color as arguments, and returns a map of legal moves for that color. Each key should be the coordinates of a legal move, and its value a set of the coordinates of the pieces flipped by that move.
+;; Reversi is normally played on an 8 by 8 board. In this problem, a 4 by 4 board is represented as a two-dimensional 
+;; vector with black, white, and empty pieces represented by 'b, 'w, and 'e, respectively. Create a function that accepts
+;; a game board and color as arguments, and returns a map of legal moves for that color. Each key should be the coordinates 
+;; of a legal move, and its value a set of the coordinates of the pieces flipped by that move.
 
 ;; Board coordinates should be as in calls to get-in. For example, [0 1] is the topmost row, second column from the left.
 
@@ -3878,9 +3981,16 @@
 ;; Topics:	tree
 
 
-;; Every node of a tree is connected to each of its children as well as its parent. One can imagine grabbing one node of a tree and dragging it up to the root position, leaving all connections intact. For example, below on the left is a binary tree. By pulling the "c" node up to the root, we obtain the tree on the right. 
+;; Every node of a tree is connected to each of its children as well as its parent. One can imagine grabbing one 
+;; node of a tree and dragging it up to the root position, leaving all connections intact. For example, below on the 
+;; left is a binary tree. By pulling the "c" node up to the root, we obtain the tree on the right. 
  
-;; Note it is no longer binary as "c" had three connections total -- two children and one parent. Each node is represented as a vector, which always has at least one element giving the name of the node as a symbol. Subsequent items in the vector represent the children of the node. Because the children are ordered it's important that the tree you return keeps the children of each node in order and that the old parent node, if any, is appended on the right. Your function will be given two args -- the name of the node that should become the new root, and the tree to transform. 
+;; Note it is no longer binary as "c" had three connections total -- two children and one parent. Each node is 
+;; represented as a vector, which always has at least one element giving the name of the node as a symbol. 
+;; Subsequent items in the vector represent the children of the node. Because the children are ordered it's important 
+;; that the tree you return keeps the children of each node in order and that the old parent node, if any, is appended 
+;; on the right. Your function will be given two args -- the name of the node that should become the new root, and the 
+;; tree to transform. 
 
 
 (defn reparent [new-root tree]
@@ -3970,7 +4080,11 @@
 ;; Topics:	data-juggling
 
 
-;; Create a function of two integer arguments: the start and end, respectively. You must create a vector of strings which renders a 45° rotated square of integers which are successive squares from the start point up to and including the end point. If a number comprises multiple digits, wrap them around the shape individually. If there are not enough digits to complete the shape, fill in the rest with asterisk characters. The direction of the drawing should be clockwise, starting from the center of the shape and working outwards, with the initial direction being down and to the right.
+;; Create a function of two integer arguments: the start and end, respectively. You must create a vector of strings which 
+;; renders a 45° rotated square of integers which are successive squares from the start point up to and including the end 
+;; point. If a number comprises multiple digits, wrap them around the shape individually. If there are not enough digits to 
+;; complete the shape, fill in the rest with asterisk characters. The direction of the drawing should be clockwise, starting 
+;; from the center of the shape and working outwards, with the initial direction being down and to the right.
 
 (defn data-juggle [start end]
   (letfn [(left [[pos & stack]]
@@ -4122,14 +4236,18 @@
 ;; Topics:	automata seqs
 
 
-;; A deterministic finite automaton (DFA) is an abstract machine that recognizes a regular language. Usually a DFA is defined by a 5-tuple, but instead we'll use a map with 5 keys:
+;; A deterministic finite automaton (DFA) is an abstract machine that recognizes a regular language. Usually a DFA is defined by a 5-tuple, 
+;; but instead we'll use a map with 5 keys:
 ;; :states is the set of states for the DFA.
 ;; :alphabet is the set of symbols included in the language recognized by the DFA.
 ;; :start is the start state of the DFA.
 ;; :accepts is the set of accept states in the DFA.
 ;; :transitions is the transition function for the DFA, mapping :states ⨯ :alphabet onto :states.
 ;;
-;;Write a function that takes as input a DFA definition (as described above) and returns a sequence enumerating all strings in the language recognized by the DFA. Note: Although the DFA itself is finite and only recognizes finite-length strings it can still recognize an infinite set of finite-length strings. And because stack space is finite, make sure you don't get stuck in an infinite loop that's not producing results every so often!
+;; Write a function that takes as input a DFA definition (as described above) and returns a sequence enumerating all strings in the language 
+;; recognized by the DFA. Note: Although the DFA itself is finite and only recognizes finite-length strings it can still recognize an infinite 
+;; set of finite-length strings. And because stack space is finite, make sure you don't get stuck in an infinite loop that's not producing 
+;; results every so often!
 
 (defn state-machine [machine]
   (letfn [(gen-strings 
@@ -4221,14 +4339,22 @@
 
 ;; Everyone loves triangles, and it's easy to understand why—they're so wonderfully symmetric (except scalenes, they suck). 
 
-;; Your passion for triangles has led you to become a miner (and part-time Clojure programmer) where you work all day to chip out isosceles-shaped minerals from rocks gathered in a nearby open-pit mine. There are too many rocks coming from the mine to harvest them all so you've been tasked with writing a program to analyze the mineral patterns of each rock, and determine which rocks have the biggest minerals. 
+;; Your passion for triangles has led you to become a miner (and part-time Clojure programmer) where you work all day to 
+;; chip out isosceles-shaped minerals from rocks gathered in a nearby open-pit mine. There are too many rocks coming from 
+;; the mine to harvest them all so you've been tasked with writing a program to analyze the mineral patterns of each rock, 
+;; and determine which rocks have the biggest minerals. 
 
-;; Someone has already written a computer-vision system for the mine. It images each rock as it comes into the processing centre and creates a cross-sectional bitmap of mineral (1) and rock (0) concentrations for each one. 
+;; Someone has already written a computer-vision system for the mine. It images each rock as it comes into the processing 
+;; center and creates a cross-sectional bitmap of mineral (1) and rock (0) concentrations for each one. 
 
-;; You must now create a function which accepts a collection of integers, each integer when read in base-2 gives the bit-representation of the rock (again, 1s are mineral and 0s are worthless scalene-like rock). You must return the cross-sectional area of the largest harvestable mineral from the input rock, as follows: 
+;; You must now create a function which accepts a collection of integers, each integer when read in base-2 gives the 
+;; bit-representation of the rock (again, 1s are mineral and 0s are worthless scalene-like rock). You must return the
+;; cross-sectional area of the largest harvestable mineral from the input rock, as follows: 
 ;; The minerals only have smooth faces when sheared vertically or horizontally from the rock's cross-section
 ;; The mine is only concerned with harvesting isosceles triangles (such that one or two sides can be sheared)
-;; If only one face of the mineral is sheared, its opposing vertex must be a point (ie. the smooth face must be of odd length), and its two equal-length sides must intersect the shear face at 45° (ie. those sides must cut even-diagonally)
+;; If only one face of the mineral is sheared, its opposing vertex must be a point (ie. the smooth face must 
+;;    be of odd length), and its two equal-length sides must intersect the shear face at 45° 
+;;    (ie. those sides must cut even-diagonally)
 ;; The harvested mineral may not contain any traces of rock
 ;; The mineral may lie in any orientation in the plane
 ;; Area should be calculated as the sum of 1s that comprise the mineral
@@ -4366,22 +4492,29 @@
 ;; Topics:	data-analysis math
 
 
-;; A Latin square of order n is an n x n array that contains n different elements, each occurring exactly once in each row, and exactly once in each column. For example, among the following arrays only the first one forms a Latin square:
+;; A Latin square of order n is an n x n array that contains n different elements, each occurring exactly 
+;; once in each row, and exactly once in each column. For example, among the following arrays only the first 
+;; one forms a Latin square:
 
 
 ;; A B C    A B C    A B C
 ;; B C A    B C A    B D A
 ;; C A B    C A C    C A B
  
-;; Let V be a vector of such vectors1 that they may differ in length2. We will say that an arrangement of vectors of V in consecutive rows is an alignment (of vectors) of V if the following conditions are satisfied:
+;; Let V be a vector of such vectors1 that they may differ in length2. We will say that an arrangement of 
+;; vectors of V in consecutive rows is an alignment (of vectors) of V if the following conditions are satisfied:
 
 ;; All vectors of V are used.
 ;; Each row contains just one vector.
 ;; The order of V is preserved.
 ;; All vectors of maximal length are horizontally aligned each other.
-;; If a vector is not of maximal length then all its elements are aligned ;;    with elements of some subvector of a vector of maximal length.
-;; Let L denote a Latin square of order 2 or greater. We will say that L       is included in V or that V includes L iff there exists an alignment       of V such that contains a subsquare that is equal to L.
-;; For example, if V equals [[1 2 3][2 3 1 2 1][3 1 2]] then there are         nine alignments of V (brackets omitted):
+;; If a vector is not of maximal length then all its elements are aligned with elements of some subvector 
+;; of a vector of maximal length.
+
+;; Let L denote a Latin square of order 2 or greater. We will say that L is included in V or that V includes L 
+;; iff there exists an alignment       of V such that contains a subsquare that is equal to L.
+
+;; For example, if V equals [[1 2 3][2 3 1 2 1][3 1 2]] then there are nine alignments of V (brackets omitted):
 
  
 ;;        1              2              3
@@ -4398,9 +4531,15 @@
 ;;  C   2 3 1 2 1    2 3 1 2 1    2 3 1 2 1
 ;;          3 1 2        3 1 2        3 1 2
  
-;; Alignment A1 contains Latin square [[1 2 3][2 3 1][3 1 2]], alignments A2, A3, B1, B2, B3 contain no Latin squares, and alignments C1, C2, C3 contain [[2 1][1 2]]. Thus in this case V includes one Latin square of order 3 and one of order 2 which is included three times.
+;; Alignment A1 contains Latin square [[1 2 3][2 3 1][3 1 2]], alignments A2, A3, B1, B2, B3 contain no
+;; Latin squares, and alignments C1, C2, C3 contain [[2 1][1 2]]. Thus in this case V includes one Latin 
+;; square of order 3 and one of order 2 which is included three times.
 
-;; Our aim is to implement a function which accepts a vector of vectors V as an argument, and returns a map which keys and values are integers. Each key should be the order of a Latin square included in V, and its value a count of different Latin squares of that order included in V. If V does not include any Latin squares an empty map should be returned. In the previous example the correct output of such a function is {3 1, 2 1} and not {3 1, 2 3}.
+;; Our aim is to implement a function which accepts a vector of vectors V as an argument, and returns a map 
+;; which keys and values are integers. Each key should be the order of a Latin square included in V, and its 
+;; value a count of different Latin squares of that order included in V. If V does not include any Latin squares 
+;; an empty map should be returned. In the previous example the correct output of such a function is {3 1, 2 1} 
+;; and not {3 1, 2 3}.
 
 ;; [1] Of course, we can consider sequences instead of vectors. 
 ;; [2] Length of a vector is the number of elements in the vector.
@@ -4521,7 +4660,11 @@
 ;; Topics:	math circuit-design
 
 
-;; Create a function which accepts as input a boolean algebra function in the form of a set of sets, where the inner sets are collections of symbols corresponding to the input boolean variables which satisfy the function (the inputs of the inner sets are conjoint, and the sets themselves are disjoint... also known as canonical minterms). Note: capitalized symbols represent truth, and lower-case symbols represent negation of the inputs. Your function must return the minimal function which is logically equivalent to the input. 
+;; Create a function which accepts as input a boolean algebra function in the form of a set of sets, where the inner sets 
+;; are collections of symbols corresponding to the input boolean variables which satisfy the function (the inputs of the 
+;; inner sets are conjoint, and the sets themselves are disjoint... also known as canonical minterms). Note: capitalized 
+;; symbols represent truth, and lower-case symbols represent negation of the inputs. Your function must return the minimal 
+;; function which is logically equivalent to the input. 
 
 ;; PS — You may want to give this a read before proceeding: K-Maps
 
@@ -4658,7 +4801,3 @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
 ;; <=
-
-;; @@
-
-;; @@
