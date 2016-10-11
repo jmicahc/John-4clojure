@@ -1,32 +1,36 @@
 ;; gorilla-repl.fileformat = 1
 
 ;; **
-;;; Below are solutions to most of the non-utterly-trivial programming problems posted at 4clojure.com. You can find me as user jomicoll on the website.
+;;; Below are solutions to the non-utterly-trivial programming problems posted at 4clojure.com, ordered from easy to harder. One can find me as user jomicoll on the website.
 ;; **
 
 ;; @@
+;;Second to Last
 ;;Difficulty:	Easy
 ;;Topics:	seqs
 
-(def pen (comp first next reverse))
-
 ;;Write a function which returns the second to last element from a sequence.
-(= (pen (list 1 2 3 4 5)) 4)
-(= (pen ["a" "b" "c"]) "b")
-(= (pen [[1 2] [3 4]]) [1 2])
+
+(def f (comp first next reverse))
+
+(= (f (list 1 2 3 4 5)) 4)
+(= (f ["a" "b" "c"]) "b")
+(= (f [[1 2] [3 4]]) [1 2])
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
 ;; <=
 
 ;; @@
+;;Reimplement nth
 ;;Difficulty:	Easy
 ;;Topics:	seqs core-functions
+
+;; Write a function which returns the Nth element from a sequence.
 
 (defn nth* [coll n]
   (if (= n 0) (first coll) (recur (next coll) (dec n))))
 
-;; Write a function which returns the Nth element from a sequence.
 (= (nth* '(4 5 6 7) 2) 6)
 (= (nth* [:a :b :c] 0) :a)
 (= (nth* [1 2 3 4] 1) 2)
@@ -38,8 +42,11 @@
 ;; <=
 
 ;; @@
+;; Reimplement count
 ;; Difficulty:	Easy
 ;; Topics:	seqs core-functions
+
+;; Write a function which returns the total number of elements in a sequence.
 
 (defn cnt [coll]
   (letfn [(mycount [coll cnt]
@@ -48,7 +55,6 @@
                   (recur (next coll) (inc cnt))))]
     (mycount coll 0)))
 
-;; Write a function which returns the total number of elements in a sequence.
 (= (cnt '(1 2 3 3 1)) 5)
 (= (cnt "Hello World") 11)
 (= (cnt [[1 2] [3 4] [5 6]]) 3)
@@ -60,13 +66,14 @@
 ;; <=
 
 ;; @@
-
+;;Sum
 ;;Difficulty:	Easy
-;; Topics:	seqs
+;;Topics:	seqs
+
+;;Write a function which returns the sum of a sequence of numbers.
 
 (def sum (partial reduce +))
 
-;;Write a function which returns the sum of a sequence of numbers.
 (= (sum [1 2 3]) 6)
 (= (sum (list 0 -2 5 5)) 8)
 (= (sum #{4 2 1}) 7)
@@ -81,9 +88,10 @@
 ;; Difficulty:	Easy
 ;; Topics:	seqs
 
+;; Write a function which returns only the odd numbers from a sequence.
+
 (def odd (partial filter odd?))
 
-;; Write a function which returns only the odd numbers from a sequence.
 (= (odd #{1 2 3 4 5}) '(1 3 5))
 (= (odd [4 2 1 6]) '(1))
 (= (odd [2 2 4 6]) '())
@@ -98,10 +106,12 @@
 ;;Difficulty:	Easy
 ;;Topics:	seqs core-functions
 
+
+;;Write a function which reverses a sequence.
+
 (defn rev [coll] 
   (apply conj nil coll))
 
-;;Write a function which reverses a sequence.
 (= (rev [1 2 3 4 5]) [5 4 3 2 1])
 (= (rev (sorted-set 5 7 2 7)) '(7 5 2))
 (= (rev [[1 2][3 4][5 6]]) [[5 6][3 4][1 2]])
@@ -119,7 +129,7 @@
 
 ;;Hint: "racecar" does not equal '(\r \a \c \e \c \a \r)
 
-(def pal #(= (seq %1) (reverse %1)))
+(defn pal [x] (= (seq x) (reverse x)))
 
 (false? (pal '(1 2 3 4 5)))
 (true?  (pal "racecar"))
@@ -137,6 +147,8 @@
 ;;Difficulty:	Easy
 ;;Topics:	Fibonacci seqs
 
+;;Write a function which returns the first X fibonacci numbers.
+
 (defn fib [n]
   (letfn [(fibs []
                 ((fn next-fib [a b]
@@ -144,7 +156,6 @@
                  0 1))]
     (take n (next (fibs)))))
 
-;;Write a function which returns the first X fibonacci numbers.
 (= (fib 3) '(1 1 2))
 (= (fib 6) '(1 1 2 3 5 8))
 (= (fib 8) '(1 1 2 3 5 8 13 21))
@@ -241,7 +252,7 @@
 
 (defn range* [start end]
   (lazy-seq 
-    (if (>= start end) ni
+    (when (< start end) 
       (cons start (range* (inc start) end)))))
 
 ;; Write a function which creates a list of all integers in a given range.
@@ -307,7 +318,7 @@
 ;;second item from each, then the third, etc.
 
 (defn interleave* [coll1 coll2] 
-  (apply concat (map list coll1 coll2)))
+  (mapcat list coll1 coll2))
 
 (= (interleave* [1 2 3] [:a :b :c]) '(1 :a 2 :b 3 :c))
 (= (interleave* [1 2] [3 4 5 6]) '(1 3 2 4))
@@ -319,17 +330,16 @@
 ;; <=
 
 ;; @@
-;; Flatten a SequenceSolutions
+;; Flatten a Sequence
 ;; Difficulty:	Easy
 ;; Topics:	seqs core-functions
 
 ;; Write a function which flattens a sequence.
 
 (defn flat [coll]
-  (lazy-seq 
-    (if (sequential? coll)
-      (apply concat (map flat coll))
-      (list coll))))
+  (if (sequential? coll)  
+    (mapcat flat coll)  
+    (list coll)))
 
 (= (flat '((1 2) 3 [4 [5 6]])) '(1 2 3 4 5 6))
 (= (flat ["a" ["b"] "c"]) '("a" "b" "c"))
@@ -451,7 +461,6 @@
 (= (drop-nth [1 2 3 4 5 6] 4) [1 2 3 5 6])
 
 
-
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
@@ -497,7 +506,7 @@
 
 ;; Write a function which takes a vector of keys and a vector of values and constructs a map from them.
 
-(defn to-map [ks vs]
+(defn to-map [ks vs] 
   (into {} (map vector ks vs)))
 
 (= (to-map [:a :b :c] [1 2 3]) {:a 1, :b 2, :c 3})
@@ -1232,6 +1241,7 @@
 ;; consisting of k distinct elements taken from S. The number of k-combinations for a sequence is equal to the binomial 
 ;; coefficient.
 
+
 (defn combinations
   [k coll]
   (letfn [(comb-aux
@@ -1363,7 +1373,7 @@
     (if (empty? coll)
       (list init)
       (cons init
-        (reductions* f (f init (first coll)) (rest coll)))))))
+            (reductions* f (f init (first coll)) (rest coll)))))))
 
 (= (take 5 (reductions* + (range))) [0 1 3 6 10])
 
@@ -1649,7 +1659,7 @@
 ;; Write an oscillating iterate: a function that takes an initial value and a variable number of functions. It should return a 
 ;; lazy sequence of the functions applied to the value in order, restarting from the first function after it hits the end.
 
-(defn oscilrate [init & fs]
+#_(defn oscilrate [init & fs]
   (letfn [(step
             [init & fs]
             (lazy-seq
@@ -1663,9 +1673,9 @@
            (apply concat 
                   (repeat fs)))))
 
-;; Better solution is:
-(fn [init & fs]
-  (reductions (fn [a f] (reduced (f a))) init (cycle fs)))
+;; Better solution (from mike fikes) is:
+(defn oscilrate [init & fs]
+  (reductions (fn [a f] (f a)) init (cycle fs)))
 
 ;; Reductions takes 
 
@@ -1749,7 +1759,7 @@
 
 
 (defn big-divide [n a b]
-   (let [n (dec n)
+   (let [n   (dec n)
          n_a (bigint (/ (- n (rem n a)) a))
          n_b (bigint (/ (- n (rem n b)) b))
          ab  (* a b)
@@ -1811,8 +1821,8 @@
             (if (< n 2) false      
               (loop [x 2]
                 (cond (> x (/ n 2)) true
-                (binary-search n x) false
-                :else (recur (unchecked-inc x))))))
+                      (binary-search n x) false
+                      :else (recur (unchecked-inc x))))))
           
           (nearest-lesser-prime [n]
             (loop [x (unchecked-dec n)]
@@ -2359,8 +2369,8 @@
 ;; set of sets, where each sub-set is a group of words which are anagrams of each other. Each sub-set should 
 ;; have at least two words. Words without any anagrams should not be included in the result.
 
-;; original solution.
-#_(defn anagram-finder [words]
+;; original (unimaginably slowly) solution.
+#_(defn anagrams [words]
   (letfn [(rotate
            [coll]
            (conj (subvec coll 1) (first coll)))
@@ -2389,7 +2399,7 @@
             (clojure.set/difference words perms #{word})
             (conj result (cloure.set/intersection perms words))))))))
 
-;; Turns ou anagrams have equivalent histograms:
+;; Turns out anagrams have equivalent histograms:
 (defn anagrams [words]
   (->> words (group-by frequencies) vals (map set) (filter #(> (count %) 1)) set))
 
@@ -2741,12 +2751,12 @@
 
 (defn lis [coll]
   (letfn [(rf [[current longest] e]
-	       (if (= (dec e) (peek current))
-                 (let [current (conj current e)]
-                   [current (if (> (count current) (count longest))
-                              current
-                              longest)])
-                 [[e] longest]))]
+	       (if (= (dec e) (peek current))    
+             (let [current (conj current e)]
+               [current (if (> (count current) (count longest))
+                          current
+                          longest)])    
+             [[e] longest]))]
          (get (reduce rf [[] []] coll) 1)))
 
 
@@ -3118,7 +3128,7 @@
         neighbors (for [[i j] living
                         k (range -1 2)
                         l (range -1 2)
-                        :when (not (= k l 0))]
+                        :when (not= k l 0)]
                     [(+ i k) (+ j l)])
         
         counts (reduce (fn [ret cell]
@@ -3333,6 +3343,7 @@
                                (first (disj % node))) unvisited)))))]
     (boolean (some true? (walk #{} (ffirst edges))))))
 
+
 (= true (graph-tour [[:a :b]]))
 
 (= false (graph-tour [[:a :a] [:b :b]]))
@@ -3433,8 +3444,8 @@
 
 ;; @@
 ;; For Science!
-;; Difficulty:	Hard
-;; Topics:	game
+;; Difficulty: Hard
+;; Topics: game
 
 
 ;; A mad scientist with tenure has created an experiment tracking mice in a maze. Several mazes have been 
@@ -3981,16 +3992,9 @@
 ;; Topics:	tree
 
 
-;; Every node of a tree is connected to each of its children as well as its parent. One can imagine grabbing one 
-;; node of a tree and dragging it up to the root position, leaving all connections intact. For example, below on the 
-;; left is a binary tree. By pulling the "c" node up to the root, we obtain the tree on the right. 
+;; Every node of a tree is connected to each of its children as well as its parent. One can imagine grabbing one node of a tree and dragging it up to the root position, leaving all connections intact. For example, below on the left is a binary tree. By pulling the "c" node up to the root, we obtain the tree on the right. 
  
-;; Note it is no longer binary as "c" had three connections total -- two children and one parent. Each node is 
-;; represented as a vector, which always has at least one element giving the name of the node as a symbol. 
-;; Subsequent items in the vector represent the children of the node. Because the children are ordered it's important 
-;; that the tree you return keeps the children of each node in order and that the old parent node, if any, is appended 
-;; on the right. Your function will be given two args -- the name of the node that should become the new root, and the 
-;; tree to transform. 
+;; Note it is no longer binary as "c" had three connections total -- two children and one parent. Each node is represented as a vector, which always has at least one element giving the name of the node as a symbol. Subsequent items in the vector represent the children of the node. Because the children are ordered it's important that the tree you return keeps the children of each node in order and that the old parent node, if any, is appended on the right. Your function will be given two args -- the name of the node that should become the new root, and the tree to transform. 
 
 
 (defn reparent [new-root tree]
@@ -4006,6 +4010,7 @@
                                 (walk (reverse-arrow parent child))))
                             (rest parent)))))]
     (first (filter #(= (first %) new-root) (walk tree)))))
+
 
 (= '(n)
    (reparent 'n '(n)))
@@ -4028,7 +4033,7 @@
             (g) 
             (h)))))
   (reparent 
-     'd '(a
+      'd '(a
             (b 
               (c) 
               (d) 
@@ -4052,8 +4057,8 @@
           (m
             (n)
             (o))))))
-   (reparent
-     'c '(a
+   (reparent 
+       'c '(a
              (b
                (c
                  (d)
@@ -4068,7 +4073,6 @@
                (m
                  (n)
                  (o))))))
-
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
@@ -4545,7 +4549,6 @@
 ;; [2] Length of a vector is the number of elements in the vector.
 
 
-;; A rather horrifying solution
 (defn find-latin-squares [colls]
   (letfn [(latin-square? [colls]
             (let [t (map set colls)]
@@ -4562,7 +4565,7 @@
               (for [x (first colls)
                     xs (product (rest colls))]
                 (cons x xs))))
-          (squares [colls]
+          (padded-squares [colls]
             (let [mx (apply max (map count colls))]
               (for [alignment (product (alignments colls))]
                 (reduce (fn [ret [row offset]]
@@ -4574,7 +4577,7 @@
                                                (repeat (- mx (+ offset (count coll))) 0))))) 
                         colls
                         alignment))))]
-    (let [squares (squares colls)
+    (let [squares (padded-squares colls)
           longest-row (apply max (map count colls))]
       (->> (for [square squares
                  size (range 2 (inc longest-row))]
@@ -4673,8 +4676,8 @@
   (letfn [(mrg [ret [a b]]                                                                                              
             (let [ab (clojure.set/intersection a b)]                                                                    
               (if (and (= (count ab) (dec (count a)))                                                                   
-                       (= (.toLowerCase (str (first (clojure.set/difference a ab))))                                    
-                          (.toLowerCase (str (first (clojure.set/difference b ab))))))                                  
+                       (= (-> a (clojure.set/difference ab) first str .toLowerCase)
+                          (-> b (clojure.set/difference ab) first str .toLowerCase)))                                  
                 (disj (conj ret ab) a b)                                                                                
                 ret)))
           (reduce-pairwise [terms]                                                                                      
@@ -4795,8 +4798,6 @@
          #{'A 'b 'C 'd}})
    #{#{'B 'D}
      #{'b 'd}})
-
-
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
