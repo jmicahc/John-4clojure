@@ -8,7 +8,7 @@
 ;;Difficulty:	Easy
 ;;Topics:	seqs
 
-(defn pen [coll] ((comp first next reverse) coll))
+(def pen (comp first next reverse))
 
 ;;Write a function which returns the second to last element from a sequence.
 (= (pen (list 1 2 3 4 5)) 4)
