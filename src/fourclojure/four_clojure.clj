@@ -1249,7 +1249,7 @@
 	           (cons x xs))))]
     (let [indices (comb-aux k 0)
           coll (vec coll)]
-      (into #{} (map (fn [idxs] (into #{} (map coll idxs))) indices)))))
+      (set (map (fn [idxs] (set (map coll idxs))) indices)))))
 
 (= (combinations 1 #{4 5 6}) #{#{4} #{5} #{6}})
 
@@ -1488,18 +1488,6 @@
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
-;; <=
-
-;; @@
-(defn oscilrate [init & fs]
-  (lazy-seq
-    (when fs
-      (cons init  (apply oscilrate 
-                         ((first fs) init)
-                         (rest fs))))))
-;; @@
-;; =>
-;;; {"type":"html","content":"<span class='clj-var'>#&#x27;user/oscilrate</span>","value":"#'user/oscilrate"}
 ;; <=
 
 ;; @@
@@ -1877,8 +1865,7 @@
 ;; 10, [1 1 1 1] in base 2 and [15] in base 16. 
 
 (defn convert [n base]
-  (if (< n base)
-    [n]
+  (if (< n base) [n]
     (into (convert (quot n base) base)
           (convert (rem n base) base))))
 
