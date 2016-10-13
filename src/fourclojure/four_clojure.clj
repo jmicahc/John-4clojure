@@ -1263,7 +1263,7 @@
 (= (combinations 4 #{[1 2 3] :a "abc" "efg"}) #{#{[1 2 3] :a "abc" "efg"}})
 
 (= (combinations 2 #{[1 2 3] :a "abc" "efg"}) #{#{[1 2 3] :a} #{[1 2 3] "abc"} #{[1 2 3] "efg"}
-                                    #{:a "abc"} #{:a "efg"} #{"abc" "efg"}})
+                                                #{:a "abc"} #{:a "efg"} #{"abc" "efg"}})
 
 
 ;; @@
@@ -2221,12 +2221,12 @@
 
 
 (defn merge-with* [f & ms]
-  (reduce (fn walk [res [[k v] & xs]]
+  (reduce (fn walk [ret [[k v] & xs]]
             (if k
-              (if (res k)
-                (recur (assoc res k (f (res k) v)) xs)
-                (recur (assoc res k v) xs))
-              res))
+              (if (ret k)
+                (recur (assoc ret k (f (ret k) v)) xs)
+                (recur (assoc ret k v) xs))
+              ret))
           (first ms)
           (map vec (next ms))))
 
@@ -2986,11 +2986,9 @@
                       [node visits]
                       (let [tgts      (mat node)
                             visits    (conj visits node)
-                            unvisited (clojure.set/difference 
-                                        tgts visits)]
+                            unvisited (remove visits tgts)]
                         (if (== (count words) (count visits)) true
-                          (some true? (map #(walk % visits) 
-                                           unvisited)))))]
+                          (some true? (map #(walk % visits) unvisited)))))]
             (walk node #{})))
           
           (adjacency-mat 
