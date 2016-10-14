@@ -1,14 +1,12 @@
 ;; gorilla-repl.fileformat = 1
 
 ;; **
-;;; Below are solutions to the non-utterly-trivial programming problems posted at 4clojure.com, ordered from easy to harder. One can find me as user jomicoll on the website.
+;;; <h3>4Clojure!</h3>
+;;; 
+;;; <span>Below are solutions to the non-utterly-trivial problem posted at 4clojure.com. One can find me on the website as user jomicoll.</span>
 ;; **
 
 ;; **
-;;; 
-;;; <button onclick="scrollWin()">Click me to scroll vertically!</button>
-;;; <section>
-;;;   <p>Problems:</p>
 ;;;   <table>
 ;;;   <tr><th>Title</th><th>Topics</th><th>Dificulty</th></tr>
 ;;;   <tr><td><a href="#second-to-last">Second to Last</a></td><td>seqs</td><td>Easy</td></tr>
@@ -26,38 +24,99 @@
 ;;;   <tr><td><a href="#compress-a-sequence">Compress a sequence</a></td><td>seqs compression</td><td>easy</td></tr>
 ;;;   <tr><td><a href="#factorial-fun">Factorial fun</a></td><td>math</td><td>easy</td></tr>
 ;;;   <tr><td><a href="#interleave-two-seqs">Interleave two seqs</a></td><td>seqs core-functions</td><td>easy</td></tr>
-;;;   <tr><td><a href="flatten-a-sequence"></a></td><td></td><td></td></tr>
-;;;   <tr><td><a href="#replicate-a-sequence"></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href="flatten-a-sequence">Flatten a sequence</a></td><td></td><td></td></tr>
+;;;   <tr><td><a href="#replicate-a-sequence">Replicate a sequence</a></td><td></td><td></td></tr>
 ;;;   <tr><td><a href="#intro-to-iterate">Intro to iterate</a></td><td>seqs</td><td>easy</td></tr>
 ;;;   <tr><td><a href="#contain-yourself">Contain yourself</a></td><td>seqs</td><td>easy</td></tr>
 ;;;   <tr><td><a href="#interpose-a-seq">Interpose a seq</a></td><td>seqs, core-functions</td><td>easy</td></tr>
 ;;;   <tr><td><a href="#pack-a-sequence">Pack a sequence</a></td><td>seqs</td><td>easy</td></tr>
 ;;;   <tr><td><a href="#drop-every-nth-item">Drop every nth item</a></td><td>seqs</td><td>easy</td></tr>
 ;;;   <tr><td><a href="#split-a-sequence">Split a sequence</a></td><td>seqs core-functions</td><td>easy</td></tr>
-;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
-;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
-;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
-;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
-;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
-;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
-;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
-;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
-;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
-;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
-;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
-;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
-;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
-;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
-;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
-;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href="#advanced-destructuring">Advanced destructuring</a></td><td>seqs, core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#map-construction">Map construction</a></td><td>core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#greatest-common-divisor">Greatest Common Divisor</a></td><td>core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#set-intersection">Set Intersection</a></td><td>core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#comparisons">Comparisons</a></td><td></td><td>easy</td></tr>
+;;;   <tr><td><a href="#reimplement-iterate">Reimplement iterate</a></td><td>seqs, core-functions</td><td> easy</td></tr>
+;;;   <tr><td><a href="#simple-closures">Simple closures</a></td><td>core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#cartesian-product">Cartesian Product</a></td><td>core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#grojup-by">Group By</a></td><td>core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#symmetric-difference">Symmetric difference</a></td><td>set-theory</td><td>easy</td></tr>
+;;;   <tr><td><a href="read-a-binary-number">Read a binary number</a></td><td>binary-numbers</td><td>easy</td></tr>
+;;;   <tr><td><a href="#infix-calculator">Infix Calculator</a></td><td>math</td><td>easy</td></tr>
+;;;   <tr><td><a href="#indexing-sequences">Indexing Sequences</a></td><td>seqs</td><td>easy</td></tr>
+;;;   <tr><td><a href="#intro-to-destructuring-2">Intro to destructuring 2</a></td><td>destructuring</td><td>easy</td></tr>
+;;;   <tr><td><a href="#trees-into-tables">Trees into tables</a></td><td>destructuring</td><td>easy</td></tr>
+;;;   <tr><td><a href="#balancing-brackets">Balancing Brackets</a></td><td></td><td>combinatorics</td></tr>
+;;;   <tr><td><a href="#decurry">Decurry</a></td><td>partial-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#prime-numbers">Prime numbers</a></td><td>partial-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#rotate-a-sequence">Rotate a sequence</a></td><td>seqs</td><td>easy</td></tr>
+;;;   <tr><td><a href="#reverse-interleave">Reverse Interleave</a></td><td>seqs</td><td>easy</td></tr>
+;;;   <tr><td><a href="#split-by-type">Split by type</a></td><td>seqs</td><td>easy</td></tr>
+;;;   <tr><td><a href="#sequence-pronunciations">Sequence pronunciations</a></td><td>seqs</td><td>easy</td></tr>
+;;;   <tr><td><a href="#partialy-flatten-a-sequence">Partialy flatten a sequence</a></td><td>seqs</td><td>easy</td></tr>
+;;;   <tr><td><a href="#seqs-horribilis">Seqs-horribilis</a></td><td>seqs</td><td>easy</td></tr>
+;;;   <tr><td><a href="#generating-k-combinations">Generating k-combinations</a></td><td>seqs combinatorics</td><td>easy</td></tr>
+;;;   <tr><td><a href="#count-occurrences">Count Occurrences</a></td>seqs<td></td><td>easy</td></tr>
+;;;   <tr><td><a href="#find-distinct-items">Find distinct items</a></td><td>seqs core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#partition-a-sequence">Partition a sequence</a></td><td>seqs, core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#sequence-reductions">Sequences reductions</a></td><td>seqs core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#insert-between-two-items">Insert between two items</a></td><td>seqs</td><td>easy</td></tr>
+;;;   <tr><td><a href="#global-take-while">Global take-while</a></td><td>seqs</td><td>higher-order-functions</td></tr>
+;;;   <tr><td><a href="#equivalence-classes">Equivalence classes</a></td><td>seqs higher-order-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#power-set">Power set</a></td><td>set-theory</td><td>easy</td></tr>
+;;;   <tr><td><a href="#word-sorting">Word sorting</a></td><td>sorting</td><td>easy</td></tr>
+;;;   <tr><td><a href="#intoCamelCase">intoCamelCase</a></td><td></td><td>easy</td></tr>
+;;;   <tr><td><a href="#write-roman-numerals">Write Roman Numerals</a></td><td>strings math</td><td>medium</td></tr>
+;;;   <tr><td><a href="#oscilrate">Oscilrate</a></td><td>seqs</td><td>easy</td></tr>
+;;;   <tr><td><a href="#Sum some set subsets">Sum some set subsets</a></td><td>math</td><td>medium</td></tr>
+;;;   <tr><td><a href="#the-big-divide">The big divide</a></td><td>math</td><td>medium</td></tr>
+;;;   <tr><td><a href="#prime-sandwitch">Prime sandwitch</a></td><td>math</td><td>medium</td></tr>
+;;;   <tr><td><a href="#digits-and-bases">Digits and bases</a></td><td>math</td><td>easy</td></tr>
+;;;   <tr><td><a href="#the-balance-of-n">The balance of N</a></td><td>math</td><td>medium</td></tr>
+;;;   <tr><td><a href="#happy-numbers">Happy numbers</a></td><td>math</td><td>medium</td></tr>
+;;;   <tr><td><a href="#identify-keys-and-values">Identify keys and values</a></td><td>maps seqs</td><td>easy</td></tr>
+;;;   <tr><td><a href="#juxtaposition">Juxtaposition</a></td><td>medium</td><td>higher-order-functions core-functions</td></tr>
+;;;   <tr><td><a href="#function-composition">Function Composition</a></td><td>high-ordrer-functions core-functions</td><td>medium</td></tr>
+;;;   <tr><td><a href="#flipping-out">Flipping out</a></td><td>high-order-functions</td><td>medium</td></tr>
+;;;   <tr><td><a href="#tricky-card-games">Tricky card games</a></td><td>games</td><td>medium</td></tr>
+;;;   <tr><td><a href="#universal-computation-engine">Universal Computation Engine</a></td><td>math</td><td>medium</td></tr>
+;;;   <tr><td><a href="#reimplement-trampoline">Reimplement trampoline</a></td><td>core-functions</td><td>medium</td></tr>
+;;;   <tr><td><a href="#merge-with-a-function">Merge with a function</a></td><td>core-functions</td><td>medium</td></tr>
+;;;   <tr><td><a href="#intervals">Intervals</a></td><td></td><td>medium</td></tr>
+;;;   <tr><td><a href="#eulers-totient-function">Euler's totient function</a></td><td>math</td><td>medium</td></tr>
+;;;   <tr><td><a href="#perfect-numbers">Perfect Numbers</a></td><td></td><td>medium</td></tr>
+;;;   <tr><td><a href="#anagram-finder">Anagram finder</a></td><td>games fun</td><td>medium</td></tr>
+;;;   <tr><td><a href="#filter-perfect-squares">Filter perfect squares</a></td><td>strings, seqs</td><td>medium</td></tr>
+;;;   <tr><td><a href="#palindromic-numbers">Palindromic Numbers</a></td><td>medium</td><td>math seqs</td></tr>
+;;;   <tr><td><a href="#infinite-matrix">Infinite Matrix</a></td><td>seqs recursion math</td><td>medium</td></tr>
+;;;   <tr><td><a href="#black-box-testing">Black box testing</a></td><td>seqs testing</td><td>medium</td></tr>
+;;;   <tr><td><a href="#parenthesis-again">Parenthesis...again</a></td><td>math combinatorics</td><td></td></tr>
+;;;   <tr><td><a href="#longest-increasing-sub-seq">Longest Increasing Sub-seq</a></td><td>seqs</td><td>hard</td></tr>
+;;;   <tr><td><a href="#analyze-a-tic-tac-toe-board">Analyze a tic-tac-toe board</a></td><td>game</td><td>hard</td></tr>
+;;;   <tr><td><a href="#read-roman-numerals">Read roman numerals</a></td><td>math</td><td>hard</td></tr>
+;;;   <tr><td><a href="#triangle-minimal-path">Triangle minimal path</a></td><td>graph-theory</td><td>hard</td></tr>
+;;;   <tr><td><a href="#transitive-closure">Transitive closure</a></td><td>set-theory</td><td>hard</td></tr>
+;;;   <tr><td><a href="#word-chians">Word chains</a></td><td>seqs</td><td>hard</td></tr>
+;;;   <tr><td><a href="#graph-connectivity">Graph connectivity</a></td><td>graph-theory</td><td>hard</td></tr>
+;;;   <tr><td><a href="#game-of-life">Game of life</a></td><td>game</td><td>hard</td></tr>
+;;;   <tr><td><a href="#number-maze">Number maze</a></td><td>numbers</td><td>hard</td></tr>
+;;;   <tr><td><a href="#leveshtein-distance">Levenshetein distance</a></td><td>seqs</td><td>hard</td></tr>
+;;;   <tr><td><a href="#graph-tour">Graph tour</a></td><td>graph-theory</td><td>hard</td></tr>
+;;;   <tr><td><a href="#win-at-tic-tac-toe">Win at Tic-Tac-Toe</a></td>game<td></td><td>hard</td></tr>
+;;;   <tr><td><a href="#for-science">For science</a></td><td>game</td><td>hard</td></tr>
+;;;   <tr><td><a href="#making-data-dance">Making data dance</a></td><td>types</td><td>hard</td></tr>
+;;;   <tr><td><a href="#crossword-puzzle">Crossword puzzle</a></td><td>game</td><td>hard</td></tr>
+;;;   <tr><td><a href="#gus-quinundrum">Gus quinundrum</a></td><td>fun brain-teaser</td><td>hard</td></tr>
+;;;   <tr><td><a href="#best-hand">Best hand</a></td><td>strings game</td><td>hard</td></tr>
+;;;   <tr><td><a href="#analyze-reversi">Analyze reversi</a></td><td>strings game</td><td>hard</td></tr>
+;;;   <tr><td><a href="#tree-reparenting">Tree reparenting</a></td><td>tree</td><td>hard</td></tr>
+;;;   <tr><td><a href="#squares-squared">Squares Squared</a></td><td>data-juggling</td><td>hard</td></tr>
+;;;   <tr><td><a href="#language-of-a-dfa">Langauge of a DFA</a></td><td>math</td><td>hard</td></tr>
+;;;   <tr><td><a href="#latin-square-slicing">Latin square slicing</a></td><td>data-analysis math</td><td>hard</td></tr>
+;;;   <tr><td><a href="#search-data-juggling">Search data-juggling</a></td><td>data-juggling</td><td>hard</td></tr>
+;;;   <tr><td><a href="#Veitch, please!">Veitch, please!</a></td><td>math curcuit-design</td><td>hard</td></tr>
 ;;;   </table>
-;;;   </section>
-;;; <script>
-;;; function scrollWin(id) {
-;;;   console.log(this);
-;;;   window.location.hash = id;
-;;; }
-;;; </script>
 ;; **
 
 ;; **
@@ -795,13 +854,6 @@
 ;; **
 
 ;; @@
-;; Set Intersection
-;; Difficulty:	Easy
-;; Topics:	set-theory
-
-
-;; Write a function which returns the intersection of two sets. The intersection is the sub-set of items that each set has in common.
-
 (defn intersection [set1 set2]
   (set (filter set1 set2)))
 
@@ -862,13 +914,6 @@
 ;; **
 
 ;; @@
-;; Re-implement IterateSolutions
-;; Difficulty:	Easy
-;; Topics:	seqs core-functions
-
-
-;; Given a side-effect free function f and an initial value x write a function which returns an infinite lazy sequence of x, (f x), (f (f x)), (f (f (f x))), etc.
-
 (defn iter [f x]
   (lazy-seq (cons x (iter f (f x)))))
 
@@ -1043,16 +1088,6 @@
 ;; **
 
 ;; @@
-;; Infix Calculator
-;; Difficulty:	Easy
-;; Topics:	higher-order-functions math
-
-
-;; Your friend Joe is always whining about Lisps using the prefix notation for math. Show him how you could easily 
-;; write a function that does math using the infix notation. Is your favorite language that flexible, Joe? Write a 
-;; function that accepts a variable length mathematical expression consisting of numbers and the operations +, -, *, 
-;; and /. Assume a simple calculator that does not do precedence and instead just calculates left to right.
-
 (defn calc 
   ([x] x)
   ([x o y & expr]
@@ -1103,14 +1138,6 @@
 ;; **
 
 ;; @@
-;; Intro to Destructuring 2
-;; Difficulty:	Easy
-;; Topics:	Destructuring
-
-
-;; Sequential destructuring allows you to bind symbols to parts of sequential things (vectors, lists, seqs, etc.): 
-;; (let [bindings* ] exprs*) Complete the bindings so all let-parts evaluate to 3.
-
 (= 3
   (let [[f xs] [+ (range 3)]] (apply f xs))
   (let [[[f xs] b] [[+ 1] 2]] (f xs b))
@@ -1425,14 +1452,6 @@
 ;; **
 
 ;; @@
-;; Partially Flatten a Sequence
-;; Difficulty:	Medium
-;; Topics:	seqs
-
-
-;; Write a function which flattens any nested combination of sequential things (lists, vectors, etc.), but maintains 
-;; the lowest level sequential items. The result should be a sequence of sequences with only one level of nesting.
-
 (defn almost-flatten [coll]
   (lazy-seq
     (if-not (sequential? (first coll))
@@ -1536,15 +1555,15 @@
 ;; @@
 (defn combinations
   [k coll]
-  (letfn [(comb-aux
+  (letfn [(k-comb
 	       [m start]
 	       (if (= 1 m)
 	         (for [x (range start (count coll))]
 	           (list x))
 	         (for [x (range start (count coll))
-		           xs (comb-aux (dec m) (inc x))]
+		           xs (k-comb (dec m) (inc x))]
 	           (cons x xs))))]
-    (let [indices (comb-aux k 0)
+    (let [indices (k-comb k 0)
           coll (vec coll)]
       (set (map (fn [idxs] (set (map coll idxs))) indices)))))
 
