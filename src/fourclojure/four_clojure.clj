@@ -27,12 +27,6 @@
 ;; **
 
 ;; @@
-;;Second to Last
-;;Difficulty:	Easy
-;;Topics:	seqs
-
-;;Write a function which returns the second to last element from a sequence.
-
 (def f (comp first next reverse))
 
 (= (f (list 1 2 3 4 5)) 4)
@@ -49,7 +43,7 @@
 ;;; <li>Dificulty: Easy</li>
 ;;; <li>Topics: seqs core-functions</li>
 ;;; </ul>
-;;; <div style="padding-left:20px;padding-bottom:15px">
+;;; <div style="padding-bottom:15px">
 ;;; Write a function which returns the Nth element from a sequence.
 ;;; </div>
 ;; **
@@ -4814,3 +4808,17 @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
 ;; <=
+
+;; **
+;;; <link rel="stylesheet" type="text/css" href="http://app.klipse.tech/css/codemirror.css">
+;;;     <script>
+;;;       window.klipse_settings = {
+;;;         selector: '.language-klipse' // css selector for the html elements you want to klipsify
+;;;       };
+;;;     </script>
+;;; <script src="http://app.klipse.tech/plugin/js/klipse_plugin.js"></script>
+;; **
+
+;; @@
+
+;; @@
