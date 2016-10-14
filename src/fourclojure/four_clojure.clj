@@ -10,7 +10,7 @@
 ;;; <section>
 ;;;   <p>Problems:</p>
 ;;;   <ul>
-;;;   <li><a href="#second-to-last">Second to Last</a></li>
+;;;   <li><a href="scrollWin()">Second to Last</a></li>
 ;;;   <li><a href="#second-to-last">Second to Last</a></li>
 ;;;   <li><a href="#second-to-last">Second to Last</a></li>
 ;;;     <li></li>
