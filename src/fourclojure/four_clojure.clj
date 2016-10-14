@@ -10,7 +10,7 @@
 ;;; <section>
 ;;;   <p>Problems:</p>
 ;;;   <ul>
-;;;   <li><a href="scrollWin()">Second to Last</a></li>
+;;;   <li><button onclick="scrollWin('second-to-last')"  class="btn-link">Second to Last</button></li>
 ;;;   <li><a href="#second-to-last">Second to Last</a></li>
 ;;;   <li><a href="#second-to-last">Second to Last</a></li>
 ;;;     <li></li>
@@ -35,8 +35,8 @@
 ;;;   </ul>
 ;;;   </section>
 ;;; <script>
-;;; function scrollWin() {
-;;;   window.location.hash = "#reimplement-nth";
+;;; function scrollWin(id) {
+;;;   window.location.hash = id;
 ;;; }
 ;;; </script>
 ;; **
