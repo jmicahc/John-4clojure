@@ -10,9 +10,20 @@
 ;;; 
 ;;; <script>
 ;;; function scrollWin() {
-;;;     window.scrollTo(0, 2000);
+;;;   window.location.hash = "#reimplement-nth";
 ;;; }
 ;;; </script>
+;; **
+
+;; **
+;;; <h4>Second to Last</h4>
+;;; <ul>
+;;; <li> Difficulty: Easy</li>
+;;; <li> Topics: seqs</li>
+;;; </ul>
+;;; <div>
+;;; Write a function which returns the second to last element from a sequence.
+;;; </div>
 ;; **
 
 ;; @@
@@ -32,13 +43,18 @@
 ;;; {"type":"html","content":"<span class='clj-unkown'>true</span>","value":"true"}
 ;; <=
 
+;; **
+;;; <h4 id="reimplement-nth">Reimplement nth</h4>
+;;; <ul>
+;;; <li>Dificulty: Easy</li>
+;;; <li>Topics: seqs core-functions</li>
+;;; </ul>
+;;; <div style="padding-left:20px;padding-bottom:15px">
+;;; Write a function which returns the Nth element from a sequence.
+;;; </div>
+;; **
+
 ;; @@
-;;Reimplement nth
-;;Difficulty:	Easy
-;;Topics:	seqs core-functions
-
-;; Write a function which returns the Nth element from a sequence.
-
 (defn nth* [coll n]
   (if (= n 0) (first coll) (recur (next coll) (dec n))))
 
