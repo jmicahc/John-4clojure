@@ -1,0 +1,14 @@
+<html>
+
+  <body>
+    <div class="language-klipse">(apply + [1 2 3 4])</div>
+
+    <link rel="stylesheet" type="text/css" href="http://app.klipse.tech/css/codemirror.css">
+    <script>
+      window.klipse_settings = {
+        selector: '.language-klipse' // css selector for the html elements you want to klipsify
+      };
+    </script>
+<script src="http://app.klipse.tech/plugin/js/klipse_plugin.js"></script>
+  </body>
+</html>

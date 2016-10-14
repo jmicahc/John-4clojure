@@ -1,22 +1,12 @@
 ;; gorilla-repl.fileformat = 1
 
 ;; **
-;;; Below are solutions to the non-utterly-trivial programming problems posted at 4clojure.com, ordered from easy to harder. One can find me as user jomicoll on the website.
-;; **
-
-;; **
-;;; 
-;;; <button onclick="scrollWin()">Click me to scroll vertically!</button><br><br>
-;;; 
-;;; <script>
-;;; function scrollWin() {
-;;;     window.scrollTo(0, 2000);
-;;; }
-;;; </script>
+<div style="" Below are solutions to the non-utterly-trivial programming problems posted at 4clojure.com, ordered from easy to harder. One can find me as user jomicoll on the website.
+</div>
 ;; **
 
 ;; @@
-;;Second to Last
+;;Second toL ast
 ;;Difficulty:	Easy
 ;;Topics:	seqs
 
