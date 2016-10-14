@@ -9,30 +9,48 @@
 ;;; <button onclick="scrollWin()">Click me to scroll vertically!</button>
 ;;; <section>
 ;;;   <p>Problems:</p>
-;;;   <ul>
-;;;   <li><button onclick="window.location.hash='second-to-last';"  class="btn-link">Second to Last</button></li>
-;;;   <li><a href="#second-to-last">Second to Last</a></li>
-;;;   <li><a href="#second-to-last">Second to Last</a></li>
-;;;     <li></li>
-;;;     <li></li>
-;;;     <li></li>
-;;;     <li></li>
-;;;     <li></li>
-;;;     <li></li>
-;;;     <li></li>
-;;;     <li></li>
-;;;     <li></li>
-;;;     <li></li>
-;;;     <li></li>
-;;;     <li></li>
-;;;     <li></li>
-;;;     <li></li>
-;;;     <li></li>
-;;;     <li></li>
-;;;     <li></li>
-;;;     <li></li>
-;;;     <li></li>
-;;;   </ul>
+;;;   <table>
+;;;   <tr><th>Title</th><th>Topics</th><th>Dificulty</th></tr>
+;;;   <tr><td><a href="#second-to-last">Second to Last</a></td><td>seqs</td><td>Easy</td></tr>
+;;;   <tr><td><a href="#reimplement-nth">Reimplement nth</a></td><td>seqs core-functions</td><td>seqs, core-functions</td></tr>
+;;;   <tr><td><a href="#reimpelment-count">Reimplement count</a></td><td>seqs core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#sum">Sum</a></td><td>seqs</td><td>easy</td></tr>
+;;;   <tr><td><a href="#odd">Odd?</a></td><td>seqs, core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#reverse-a-sequence">Reverse a sequence</a></td><td>seqs, core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#fibonacci-sequence">Fibonacci Sequence</a></td><td>seqs core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#maximum-value">Maximum Value</a></td><td>seqs core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#get-the-caps">Get the caps</a></td><td>seqs</td><td>easy</td></tr>
+;;;   <tr><td><a href="#duplicate-a-sequence">Duplicate a sequence</a></td><td>seqs core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#intro-to-some">Intro to some</a></td><td></td><td>easy</td></tr>
+;;;   <tr><td><a href="#reimplement-range">Reimplement range</a></td><td>seqs, core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#compress-a-sequence">Compress a sequence</a></td><td>seqs compression</td><td>easy</td></tr>
+;;;   <tr><td><a href="#factorial-fun">Factorial fun</a></td><td>math</td><td>easy</td></tr>
+;;;   <tr><td><a href="#interleave-two-seqs">Interleave two seqs</a></td><td>seqs core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="flatten-a-sequence"></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href="#replicate-a-sequence"></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href="#intro-to-iterate">Intro to iterate</a></td><td>seqs</td><td>easy</td></tr>
+;;;   <tr><td><a href="#contain-yourself">Contain yourself</a></td><td>seqs</td><td>easy</td></tr>
+;;;   <tr><td><a href="#interpose-a-seq">Interpose a seq</a></td><td>seqs, core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href="#pack-a-sequence">Pack a sequence</a></td><td>seqs</td><td>easy</td></tr>
+;;;   <tr><td><a href="#drop-every-nth-item">Drop every nth item</a></td><td>seqs</td><td>easy</td></tr>
+;;;   <tr><td><a href="#split-a-sequence">Split a sequence</a></td><td>seqs core-functions</td><td>easy</td></tr>
+;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
+;;;   <tr><td><a href=""></a></td><td></td><td></td></tr>
+;;;   </table>
 ;;;   </section>
 ;;; <script>
 ;;; function scrollWin(id) {
