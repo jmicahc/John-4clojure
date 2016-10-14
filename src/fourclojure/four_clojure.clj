@@ -10,7 +10,7 @@
 ;;; <section>
 ;;;   <p>Problems:</p>
 ;;;   <ul>
-;;;   <li><button onclick="scrollWin('second-to-last')"  class="btn-link">Second to Last</button></li>
+;;;   <li><button onclick="window.location.hash='second-to-last';"  class="btn-link">Second to Last</button></li>
 ;;;   <li><a href="#second-to-last">Second to Last</a></li>
 ;;;   <li><a href="#second-to-last">Second to Last</a></li>
 ;;;     <li></li>
@@ -36,13 +36,14 @@
 ;;;   </section>
 ;;; <script>
 ;;; function scrollWin(id) {
+;;;   console.log(this);
 ;;;   window.location.hash = id;
 ;;; }
 ;;; </script>
 ;; **
 
 ;; **
-;;; <h4>Second to Last</h4>
+;;; <h4 id="second-to-last">Second to Last</h4>
 ;;; <ul>
 ;;; <li> Difficulty: Easy</li>
 ;;; <li> Topics: seqs</li>
